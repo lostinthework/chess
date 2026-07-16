@@ -8,4 +8,8 @@ public class RegisterResult {
         this.username = username;
         this.authToken = authToken;
     }
+
+    public String getAuthToken() {
+        return authToken;
+    }
 }
