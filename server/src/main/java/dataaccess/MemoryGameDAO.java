@@ -23,16 +23,6 @@ public class MemoryGameDAO implements InterfaceGameDAO {
         return null;
     }
 
-    public GameData getGamebyName(String gameName) {
-        // Iterate through the list until finding matching data
-        for (GameData game : games) {
-            if (game.getName().equals(gameName)) {
-                return game;
-            }
-        }
-        return null;
-    }
-
     public void addGame(GameData gameData) {
         games.add(gameData);
     }
