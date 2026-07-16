@@ -46,7 +46,7 @@ public class Server {
         app.delete("/db", ctx -> new handler.clear(useryService, gamesService).handle(ctx));
 
         //This line initializes the server and can be removed once you have a functioning endpoint
-        return desiredPort;
+        return app.port();
     }
 
     public void stop() {
