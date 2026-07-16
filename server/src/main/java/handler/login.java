@@ -5,8 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.UserData;
 import service.userService;
-import spark.Request;
-import spark.Response;
+import io.javalin.http.Context;
 
 public class login {
     private final userService useryService;
@@ -15,31 +14,32 @@ public class login {
         this.useryService = useryService;
     }
 
-    public Object handle(Request req, Response res) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException {
         var gson = new Gson();
-        res.type("application/json");
+        ctx.contentType("application/json");
 
         // Verify input
         UserData user;
         try {
-            user = gson.fromJson(req.body(), UserData.class);
+            user = gson.fromJson(ctx.body(), UserData.class);
             if (user.getUsername() == null || user.getPassword() == null) {
                 throw new DataAccessException("Error: bad request");
             }
         }
         catch (DataAccessException | JsonSyntaxException e) {
-            res.status(400);
-            return gson.toJson(new ErrorHandler("Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(new ErrorHandler("Error: bad request")));
+            return;
         }
 
         // Login
         try {
             var loginResult = useryService.login(user.getUsername(), user.getPassword());
-            return gson.toJson(loginResult);
+            ctx.result(gson.toJson(loginResult));
         }
         catch (DataAccessException e) {
-            res.status(401);
-            return gson.toJson(new ErrorHandler(e.getMessage()));
+            ctx.status(401);
+            ctx.result(gson.toJson(new ErrorHandler(e.getMessage())));
         }
     }
 }

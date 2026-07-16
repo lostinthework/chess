@@ -3,9 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import service.gameService;
-import spark.Request;
-import spark.Response;
-
+import io.javalin.http.Context;
 import java.util.Map;
 
 public class list {
@@ -15,21 +13,22 @@ public class list {
         this.gamesService = gamesService;
     }
 
-    public Object handle(Request req, Response res) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException {
         var gson = new Gson();
-        res.type("application/json");
+        ctx.contentType("application/json");
 
         // Verify authentication
         String authToken;
-        authToken = req.headers("Authorization");
+        authToken = ctx.header("Authorization");
         try {
             if (gamesService.getAuth(authToken) == null) {
                 throw new DataAccessException("Error: unauthorized");
             }
         }
         catch (DataAccessException e) {
-            res.status(401);
-            return gson.toJson(new ErrorHandler("Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
+            return;
         }
 
         // get all games
@@ -37,6 +36,6 @@ public class list {
 
         // return games
         var results = list.stream().map(g -> new ListResult(g.getGameID(), g.getWhiteUsername(), g.getBlackUsername(), g.getName())).toList();
-        return new Gson().toJson(Map.of("games", results));
+        ctx.result(gson.toJson(Map.of("games", results)));
     }
 }

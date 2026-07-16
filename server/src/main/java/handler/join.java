@@ -5,8 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.GameData;
 import service.gameService;
-import spark.Request;
-import spark.Response;
+import io.javalin.http.Context;
 
 import java.util.Map;
 
@@ -17,28 +16,29 @@ public class join {
         this.gamesService = gamesService;
     }
 
-    public Object handle(Request req, Response res) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException {
         var gson = new Gson();
-        res.type("application/json");
+        ctx.contentType("application/json");
 
         // Verify authentication
         String authToken;
-        authToken = req.headers("Authorization");
+        authToken = ctx.header("Authorization");
         try {
             if (gamesService.getAuth(authToken) == null) {
                 throw new DataAccessException("Error: unauthorized");
             }
         }
         catch (DataAccessException e) {
-            res.status(401);
-            return gson.toJson(new ErrorHandler("Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
+            return;
         }
 
         // Verify input
         String color;
         int gameID;
         try {
-            Map<String, Object> input = new Gson().fromJson(req.body(), Map.class);
+            Map<String, Object> input = gson.fromJson(ctx.body(), Map.class);
             color = (String)input.get("playerColor");
             Double doubleid = (Double)input.get("gameID");
             if (doubleid == null || color == null || (!color.equals("WHITE") && !color.equals("BLACK"))) {
@@ -47,8 +47,9 @@ public class join {
             gameID = doubleid.intValue();
         }
         catch (DataAccessException | JsonSyntaxException | ClassCastException e) {
-            res.status(400);
-            return gson.toJson(new ErrorHandler("Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(new ErrorHandler("Error: bad request")));
+            return;
         }
 
         // Check that nobody has already joined the game as the desired color
@@ -59,12 +60,13 @@ public class join {
             }
         }
         catch (DataAccessException e) {
-            res.status(403);
-            return gson.toJson(new ErrorHandler("Error: already taken"));
+            ctx.status(403);
+            ctx.result(gson.toJson(new ErrorHandler("Error: already taken")));
+            return;
         }
 
         // Join game
         gametoJoin.join(gamesService.getUsername(authToken), color);
-        return "{}";
+        ctx.result("{}");
     }
 }

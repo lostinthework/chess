@@ -5,8 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.GameData;
 import service.gameService;
-import spark.Request;
-import spark.Response;
+import io.javalin.http.Context;
 
 import java.util.Map;
 
@@ -17,11 +16,11 @@ public class create {
         this.gamesService = gamesService;
     }
 
-    public Object handle(Request req, Response res) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException {
         var gson = new Gson();
-        res.type("application/json");
+        ctx.contentType("application/json");
         String authToken;
-        authToken = req.headers("Authorization");
+        authToken = ctx.header("Authorization");
 
         // Verify authentication
         try {
@@ -30,27 +29,29 @@ public class create {
             }
         }
         catch (DataAccessException e) {
-            res.status(401);
-            return gson.toJson(new ErrorHandler("Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
+            return;
         }
 
         // Check for valid input
         GameData game;
         try {
-            game = gson.fromJson(req.body(), GameData.class);
+            game = gson.fromJson(ctx.body(), GameData.class);
             if (game.getName() == null) {
                 throw new DataAccessException("Error: bad request");
             }
         }
         catch (DataAccessException | JsonSyntaxException e) {
-            res.status(400);
-            return gson.toJson(new ErrorHandler("Error: bad request"));
+            ctx.status(400);
+            ctx.result(gson.toJson(new ErrorHandler("Error: bad request")));
+            return;
         }
 
         // Create game
         var gameID = gamesService.createGame(game.getName());
 
         // return gameID
-        return new Gson().toJson(Map.of("gameID", gameID));
+        ctx.result(gson.toJson(Map.of("gameID", gameID)));
     }
 }

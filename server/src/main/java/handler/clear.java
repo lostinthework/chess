@@ -1,7 +1,7 @@
 package handler;
 import service.gameService;
 import service.userService;
-import spark.*;
+import io.javalin.http.Context;
 
 public class clear {
     private final userService useryService;
@@ -12,10 +12,11 @@ public class clear {
         this.gamesService = gamesService;
     }
 
-    public Object handle(Request req, Response res) {
+    public void handle(Context ctx) {
         // clear everything
         useryService.clear();
         gamesService.clear();
-        return "{}";
+        ctx.contentType("application/json");
+        ctx.result("{}");
     }
 }

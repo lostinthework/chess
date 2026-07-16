@@ -3,11 +3,13 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import service.*;
-import spark.*;
+import io.javalin.Javalin;
+import io.javalin.http.Context;
 
 import java.util.Map;
 
 public class Server {
+    private Javalin app;
 
     private final InterfaceUserDAO userDAO = new MemoryUserDAO();
     private final InterfaceAuthDAO authDAO = new MemoryAuthDAO();
@@ -18,47 +20,41 @@ public class Server {
 
 
     public int run(int desiredPort) {
-        Spark.port(desiredPort);
-
-        Spark.staticFiles.location("web");
+        app = Javalin.create(config -> {config.staticFiles.add("web");}).start(desiredPort);
 
         // Register your endpoints and handle exceptions here.
 
         // Registration
-        Spark.post("/user", (req, res) -> new handler.register(useryService).handle(req, res));
+        app.post("/user", ctx -> new handler.register(useryService).handle(ctx));
 
         // Login
-        Spark.post("/session", (req, res) -> new handler.login(useryService).handle(req, res));
+        app.post("/session", ctx -> new handler.login(useryService).handle(ctx));
 
         // Logout
-        Spark.delete("/session", (req, res) -> new handler.logout(useryService).handle(req, res));
+        app.delete("/session", ctx -> new handler.logout(useryService).handle(ctx));
 
         // List games
-        Spark.get("/game", (req, res) -> new handler.list(gamesService).handle(req, res));
+        app.get("/game", ctx -> new handler.list(gamesService).handle(ctx));
 
         // Create game
-        Spark.post("/game", (req, res) -> new handler.create(gamesService).handle(req, res));
+        app.post("/game", ctx -> new handler.create(gamesService).handle(ctx));
 
         // Join game
-        Spark.put("/game", (req, res) -> new handler.join(gamesService).handle(req, res));
+        app.put("/game", ctx -> new handler.join(gamesService).handle(ctx));
 
         // Clear application
-        Spark.delete("/db", (req, res) -> new handler.clear(useryService, gamesService).handle(req, res));
+        app.delete("/db", ctx -> new handler.clear(useryService, gamesService).handle(ctx));
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
-
-        Spark.awaitInitialization();
-        return Spark.port();
+        //This line initializes the server and can be removed once you have a functioning endpoint
+        return desiredPort;
     }
 
     public void stop() {
-        Spark.stop();
-        Spark.awaitStop();
+        app.stop();
     }
 
-    private static <T> T getBody(Request request, Class<T> classy) {
-        var body = new Gson().fromJson(request.body(), classy);
+    private static <T> T getBody(Context ctx, Class<T> classy) {
+        var body = new Gson().fromJson(ctx.body(), classy);
         if (body == null) {
             // bad request
             throw new RuntimeException("missing required body");

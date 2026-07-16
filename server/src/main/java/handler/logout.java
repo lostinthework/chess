@@ -3,8 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import service.userService;
-import spark.Request;
-import spark.Response;
+import io.javalin.http.Context;
 
 import java.util.Map;
 
@@ -15,20 +14,21 @@ public class logout {
         this.useryService = useryService;
     }
 
-    public Object handle(Request req, Response res) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException {
         var gson = new Gson();
-        res.type("application/json");
+        ctx.contentType("application/json");
 
         // Verify authentication
-        String authToken = req.headers("Authorization");
+        String authToken = ctx.header("Authorization");
         try {
             // Logout
             useryService.logout(authToken);
         }
         catch (DataAccessException e) {
-            res.status(401);
-            return gson.toJson(new ErrorHandler("Error: unauthorized"));
+            ctx.status(401);
+            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
+            return;
         }
-        return "{}";
+        ctx.result("{}");
     }
 }
