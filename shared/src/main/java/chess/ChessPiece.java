@@ -81,641 +81,698 @@ public class ChessPiece {
         switch (type) {
 
             case KING:
-                // Moving up and to the left
-                if (row < 8 && column > 1) {
-                    row += 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving up and to the right
-                if (row < 8 && column < 8) {
-                    row += 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the left
-                if (row > 1 && column > 1) {
-                    row -= 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the right
-                if (row > 1 && column < 8) {
-                    row -= 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving up
-                if (row < 8) {
-                    row += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                // Moving right
-                if (column < 8) {
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                column = myPosition.getColumn();
-                // Moving left
-                if (column > 1) {
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                column = myPosition.getColumn();
-                // Moving down
-                if (row > 1) {
-                    row -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
+                moves = kingMoves(board, myPosition);
                 break;
 
             case QUEEN:
-                // Moving up and to the left
-                while (row < 8 && column > 1) {
-                    row += 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving up and to the right
-                while (row < 8 && column < 8) {
-                    row += 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the left
-                while (row > 1 && column > 1) {
-                    row -= 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the right
-                while (row > 1 && column < 8) {
-                    row -= 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving up
-                while (row < 8) {
-                    row += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                // Moving right
-                while (column < 8) {
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                column = myPosition.getColumn();
-                // Moving left
-                while (column > 1) {
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                column = myPosition.getColumn();
-                // Moving down
-                while (row > 1) {
-                    row -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
+                moves = queenMoves(board, myPosition);
                 break;
 
             case BISHOP:
-                // Moving up and to the left
-                while (row < 8 && column > 1) {
-                    row += 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving up and to the right
-                while (row < 8 && column < 8) {
-                    row += 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the left
-                while (row > 1 && column > 1) {
-                    row -= 1;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-                // Moving down and to the right
-                while (row > 1 && column < 8) {
-                    row -= 1;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
+                moves = bishopMoves(board, myPosition);
                 break;
 
             case KNIGHT:
-                // Moving 2 up 1 left
-                if (row < 7 && column > 1) {
-                    row += 2;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 left 1 up
-                if (row < 8 && column > 2) {
-                    row += 1;
-                    column -= 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 left 1 down
-                if (row > 1 && column > 2) {
-                    row -= 1;
-                    column -= 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 down 1 left
-                if (row > 2 && column > 1) {
-                    row -= 2;
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 down 1 right
-                if (row > 2 && column < 8) {
-                    row -= 2;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 right 1 down
-                if (row > 1 && column < 7) {
-                    row -= 1;
-                    column += 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 right 1 up
-                if (row < 8 && column < 7) {
-                    row += 1;
-                    column += 2;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
-                row = myPosition.getRow();
-                column = myPosition.getColumn();
-
-                // Moving 2 up 1 right
-                if (row < 7 && column < 8) {
-                    row += 2;
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's nothing blocking the way or an enemy piece is blocking the way
-                    if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                    }
-                }
+                moves = knightMoves(board, myPosition);
                 break;
 
             case ROOK:
-                // Moving up
-                while (row < 8) {
-                    row += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                row = myPosition.getRow();
-                // Moving right
-                while (column < 8) {
-                    column += 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                column = myPosition.getColumn();
-                // Moving left
-                while (column > 1) {
-                    column -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                column = myPosition.getColumn();
-                // Moving down
-                while (row > 1) {
-                    row -= 1;
-                    ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                    // There's a piece blocking the way
-                    if (blockingPiece != null) {
-                        // The piece is of the opposite color
-                        if (blockingPiece.getTeamColor() != this.pieceColor) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                        // Can't go any further
-                        break;
-                    }
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
+                moves = rookMoves(board, myPosition);
                 break;
 
             case PAWN:
                 // pawn is white
                 if (this.pieceColor == ChessGame.TeamColor.WHITE) {
-                    // Moving forward 1 space
-                    if (row < 8) {
-                        row += 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's nothing blocking the way
-                        if (blockingPiece == null) {
-                            // no promotion
-                            if (row < 8) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // with promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving forward 2 spaces
-                    if (row == 2) {
-                        row += 2;
-                        ChessPiece blockingPiece1 = board.getPiece(new ChessPosition(row - 1, column));
-                        ChessPiece blockingPiece2 = board.getPiece(new ChessPosition(row, column));
-                        // There's nothing blocking the way
-                        if (blockingPiece1 == null && blockingPiece2 == null) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                    }
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving forward and left
-                    if (column > 1) {
-                        row += 1;
-                        column -= 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's a piece of the opposite color blocking the way
-                        if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                            // No promotion
-                            if (row < 8) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // Promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
-
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving forward and right
-                    if (column < 8) {
-                        row += 1;
-                        column += 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's a piece of the opposite color blocking the way
-                        if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                            // No promotion
-                            if (row < 8) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // Promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
+                    moves = whitePawnMoves(board, myPosition);
                 }
+                // pawn is black
                 else {
-                    // Moving down 1 space
-                    if (row > 1) {
-                        row -= 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's nothing blocking the way
-                        if (blockingPiece == null) {
-                            // no promotion
-                            if (row > 1) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // with promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving down 2 spaces
-                    if (row == 7) {
-                        row -= 2;
-                        ChessPiece blockingPiece1 = board.getPiece(new ChessPosition(row + 1, column));
-                        ChessPiece blockingPiece2 = board.getPiece(new ChessPosition(row, column));
-                        // There's nothing blocking the way
-                        if (blockingPiece1 == null && blockingPiece2 == null) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                        }
-                    }
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving down and left
-                    if (column > 1) {
-                        row -= 1;
-                        column -= 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's a piece of the opposite color blocking the way
-                        if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                            // No promotion
-                            if (row > 1) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // Promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
-
-                    row = myPosition.getRow();
-                    column = myPosition.getColumn();
-
-                    // Moving down and right
-                    if (column < 8) {
-                        row -= 1;
-                        column += 1;
-                        ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-                        // There's a piece of the opposite color blocking the way
-                        if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                            // No promotion
-                            if (row > 1) {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                            }
-                            // Promotion
-                            else {
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
-                                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
-                            }
-                        }
-                    }
+                    moves = blackPawnMoves(board, myPosition);
                 }
                 break;
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving up and to the left
+        if (row < 8 && column > 1) {
+            row += 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving up and to the right
+        if (row < 8 && column < 8) {
+            row += 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the left
+        if (row > 1 && column > 1) {
+            row -= 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the right
+        if (row > 1 && column < 8) {
+            row -= 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving up
+        if (row < 8) {
+            row += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        // Moving right
+        if (column < 8) {
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        column = myPosition.getColumn();
+        // Moving left
+        if (column > 1) {
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        column = myPosition.getColumn();
+        // Moving down
+        if (row > 1) {
+            row -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving up and to the left
+        while (row < 8 && column > 1) {
+            row += 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving up and to the right
+        while (row < 8 && column < 8) {
+            row += 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the left
+        while (row > 1 && column > 1) {
+            row -= 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the right
+        while (row > 1 && column < 8) {
+            row -= 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving up
+        while (row < 8) {
+            row += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        // Moving right
+        while (column < 8) {
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        column = myPosition.getColumn();
+        // Moving left
+        while (column > 1) {
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        column = myPosition.getColumn();
+        // Moving down
+        while (row > 1) {
+            row -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving up and to the left
+        while (row < 8 && column > 1) {
+            row += 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving up and to the right
+        while (row < 8 && column < 8) {
+            row += 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the left
+        while (row > 1 && column > 1) {
+            row -= 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+        // Moving down and to the right
+        while (row > 1 && column < 8) {
+            row -= 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving 2 up 1 left
+        if (row < 7 && column > 1) {
+            row += 2;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 left 1 up
+        if (row < 8 && column > 2) {
+            row += 1;
+            column -= 2;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 left 1 down
+        if (row > 1 && column > 2) {
+            row -= 1;
+            column -= 2;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 down 1 left
+        if (row > 2 && column > 1) {
+            row -= 2;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 down 1 right
+        if (row > 2 && column < 8) {
+            row -= 2;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 right 1 down
+        if (row > 1 && column < 7) {
+            row -= 1;
+            column += 2;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 right 1 up
+        if (row < 8 && column < 7) {
+            row += 1;
+            column += 2;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving 2 up 1 right
+        if (row < 7 && column < 8) {
+            row += 2;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way or an enemy piece is blocking the way
+            if (blockingPiece == null || blockingPiece.getTeamColor() != this.pieceColor) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving up
+        while (row < 8) {
+            row += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        row = myPosition.getRow();
+        // Moving right
+        while (column < 8) {
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        column = myPosition.getColumn();
+        // Moving left
+        while (column > 1) {
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        column = myPosition.getColumn();
+        // Moving down
+        while (row > 1) {
+            row -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece blocking the way
+            if (blockingPiece != null) {
+                // The piece is of the opposite color
+                if (blockingPiece.getTeamColor() != this.pieceColor) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Can't go any further
+                break;
+            }
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> whitePawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving forward 1 space
+        if (row < 8) {
+            row += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way
+            if (blockingPiece == null) {
+                // no promotion
+                if (row < 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // with promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving forward 2 spaces
+        if (row == 2) {
+            row += 2;
+            ChessPiece blockingPiece1 = board.getPiece(new ChessPosition(row - 1, column));
+            ChessPiece blockingPiece2 = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way
+            if (blockingPiece1 == null && blockingPiece2 == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving forward and left
+        if (column > 1) {
+            row += 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece of the opposite color blocking the way
+            if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
+                // No promotion
+                if (row < 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
+        }
+
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving forward and right
+        if (column < 8) {
+            row += 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece of the opposite color blocking the way
+            if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
+                // No promotion
+                if (row < 8) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> blackPawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
+        // Moving down 1 space
+        if (row > 1) {
+            row -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way
+            if (blockingPiece == null) {
+                // no promotion
+                if (row > 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // with promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving down 2 spaces
+        if (row == 7) {
+            row -= 2;
+            ChessPiece blockingPiece1 = board.getPiece(new ChessPosition(row + 1, column));
+            ChessPiece blockingPiece2 = board.getPiece(new ChessPosition(row, column));
+            // There's nothing blocking the way
+            if (blockingPiece1 == null && blockingPiece2 == null) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+            }
+        }
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving down and left
+        if (column > 1) {
+            row -= 1;
+            column -= 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece of the opposite color blocking the way
+            if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
+                // No promotion
+                if (row > 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
+        }
+
+        row = myPosition.getRow();
+        column = myPosition.getColumn();
+
+        // Moving down and right
+        if (column < 8) {
+            row -= 1;
+            column += 1;
+            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
+            // There's a piece of the opposite color blocking the way
+            if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
+                // No promotion
+                if (row > 1) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                }
+                // Promotion
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), PieceType.QUEEN));
+                }
+            }
         }
         return moves;
     }

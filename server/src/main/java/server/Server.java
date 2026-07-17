@@ -53,12 +53,4 @@ public class Server {
         app.stop();
     }
 
-    private static <T> T getBody(Context ctx, Class<T> classy) {
-        var body = new Gson().fromJson(ctx.body(), classy);
-        if (body == null) {
-            // bad request
-            throw new RuntimeException("missing required body");
-        }
-        return body;
-    }
 }

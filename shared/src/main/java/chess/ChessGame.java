@@ -104,28 +104,32 @@ public class ChessGame {
             }
             // En Passant
             if (/* the piece being moved is a pawn */
-                    board.getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
-                            /* there was a move already made */
-                            !moveLog.isEmpty() &&
-                            /* the last move was a pawn */
-                            board.getPiece(moveLog.get(moveLog.size() - 1).getEndPosition()).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
-                            /* the enemy pawn moved to row 4 from row 2 if it's white or */
-                            ((moveLog.get(moveLog.size() - 1).getEndPosition().getRow() == 4 && moveLog.get(moveLog.size() - 1).getStartPosition().getRow() == 2 && board.getPiece(moveLog.get(moveLog.size() - 1).getEndPosition()).getTeamColor().equals(TeamColor.WHITE)) ||
-                                    /* the enemy pawn moved to row 5 from row 7 if it's black */
-                                    (moveLog.get(moveLog.size() - 1).getEndPosition().getRow() == 5 && moveLog.get(moveLog.size() - 1).getStartPosition().getRow() == 7 && board.getPiece(moveLog.get(moveLog.size() - 1).getEndPosition()).getTeamColor().equals(TeamColor.BLACK))) &&
-                            /* the starting position row is the same as the enemy pawn */
-                            startPosition.getRow() == moveLog.get(moveLog.size() - 1).getEndPosition().getRow() &&
-                            /* the starting column is one more than the enemy pawn or */
-                            (startPosition.getColumn() == moveLog.get(moveLog.size() - 1).getEndPosition().getColumn() + 1 ||
-                                    /* the starting column is one less than the enemy pawn */
-                                    startPosition.getColumn() == moveLog.get(moveLog.size() - 1).getEndPosition().getColumn() - 1)
+                board.getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
+                    /* there was a move already made */
+                    !moveLog.isEmpty() &&
+                    /* the last move was a pawn */
+                    board.getPiece(moveLog.getLast().getEndPosition()).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
+                    /* the enemy pawn moved to row 4 from row 2 if it's white or */
+                    ((moveLog.getLast().getEndPosition().getRow() == 4 &&
+                    moveLog.getLast().getStartPosition().getRow() == 2 &&
+                    board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.WHITE)) ||
+                        /* the enemy pawn moved to row 5 from row 7 if it's black */
+                        (moveLog.getLast().getEndPosition().getRow() == 5 &&
+                        moveLog.getLast().getStartPosition().getRow() == 7 &&
+                        board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.BLACK))) &&
+                    /* the starting position row is the same as the enemy pawn */
+                    startPosition.getRow() == moveLog.getLast().getEndPosition().getRow() &&
+                    /* the starting column is one more than the enemy pawn or */
+                    (startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() + 1 ||
+                        /* the starting column is one less than the enemy pawn */
+                        startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() - 1)
             ) {
 
                 ChessMove enPassant;
                 if (teamColor == TeamColor.WHITE) {
-                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.get(moveLog.size() - 1).getEndPosition().getRow() + 1, moveLog.get(moveLog.size() - 1).getEndPosition().getColumn()), null);
+                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.getLast().getEndPosition().getRow() + 1, moveLog.getLast().getEndPosition().getColumn()), null);
                 } else {
-                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.get(moveLog.size() - 1).getEndPosition().getRow() - 1, moveLog.get(moveLog.size() - 1).getEndPosition().getColumn()), null);
+                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.getLast().getEndPosition().getRow() - 1, moveLog.getLast().getEndPosition().getColumn()), null);
                 }
                 actualMoves.add(enPassant);
                 /* the move would not result in the king being in check */
@@ -160,7 +164,8 @@ public class ChessGame {
                     }
                     if (neverMovedKing) {
                         /* There are no pieces between the king and king-side rook */
-                        if (board.getPiece(new ChessPosition(1, 6)) == null && board.getPiece(new ChessPosition(1, 7)) == null) {
+                        if (board.getPiece(new ChessPosition(1, 6)) == null &&
+                            board.getPiece(new ChessPosition(1, 7)) == null) {
                             /* Never moved king-side rook */
                             for (ChessMove cm : moveLog) {
                                 if (cm.getStartPosition().equals(new ChessPosition(1, 8))) {
@@ -188,7 +193,9 @@ public class ChessGame {
                             }
                         }
                         /* There are no pieces between the king and queen-side rook */
-                        if (board.getPiece(new ChessPosition(1, 4)) == null && board.getPiece(new ChessPosition(1, 3)) == null && board.getPiece(new ChessPosition(1, 2)) == null) {
+                        if (board.getPiece(new ChessPosition(1, 4)) == null &&
+                            board.getPiece(new ChessPosition(1, 3)) == null &&
+                            board.getPiece(new ChessPosition(1, 2)) == null) {
                             /* Never moved king-side rook */
                             for (ChessMove cm : moveLog) {
                                 if (cm.getStartPosition().equals(new ChessPosition(1, 1))) {
@@ -237,7 +244,8 @@ public class ChessGame {
                     }
                     if (neverMovedKing) {
                         /* There are no pieces between the king and king-side rook */
-                        if (board.getPiece(new ChessPosition(8, 6)) == null && board.getPiece(new ChessPosition(8, 7)) == null) {
+                        if (board.getPiece(new ChessPosition(8, 6)) == null &&
+                            board.getPiece(new ChessPosition(8, 7)) == null) {
                             /* Never moved king-side rook */
                             for (ChessMove cm : moveLog) {
                                 if (cm.getStartPosition().equals(new ChessPosition(8, 8))) {
@@ -265,7 +273,9 @@ public class ChessGame {
                             }
                         }
                         /* There are no pieces between the king and queen-side rook */
-                        if (board.getPiece(new ChessPosition(8, 4)) == null && board.getPiece(new ChessPosition(8, 3)) == null && board.getPiece(new ChessPosition(8, 2)) == null) {
+                        if (board.getPiece(new ChessPosition(8, 4)) == null &&
+                            board.getPiece(new ChessPosition(8, 3)) == null &&
+                            board.getPiece(new ChessPosition(8, 2)) == null) {
                             /* Never moved king-side rook */
                             for (ChessMove cm : moveLog) {
                                 if (cm.getStartPosition().equals(new ChessPosition(8, 1))) {
@@ -334,7 +344,8 @@ public class ChessGame {
                 /* a pawn moves */
             if (startingPiece.getPieceType().equals(ChessPiece.PieceType.PAWN) &&
                 /* 1 left or 1 right and */
-                (move.getStartPosition().getColumn() == move.getEndPosition().getColumn() + 1 || move.getStartPosition().getColumn() == move.getEndPosition().getColumn() - 1) &&
+                (move.getStartPosition().getColumn() == move.getEndPosition().getColumn() + 1 ||
+                move.getStartPosition().getColumn() == move.getEndPosition().getColumn() - 1) &&
                 /* there's no piece at the end position */
                 capturedPiece == null
                 ) {
@@ -404,30 +415,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid for some other reason
      */
     public void forceMove(ChessMove move) throws InvalidMoveException {
-
-        // the piece doesn't exist, or it's not the right turn, or can't make a valid move to position
-//        if (board.getPiece(move.getStartPosition()) == null || board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn || !validMoves(move.getStartPosition()).contains(move)) {
-//            throw new InvalidMoveException("Invalid move");
-//        }
-
-        // otherwise, make the move
-//        else {
-            ChessPiece startingPiece = board.getPiece(move.getStartPosition());
-            ChessPiece.PieceType promotion = move.getPromotionPiece();
-            ChessPiece promotedPiece = startingPiece;
-            if (promotion != null) {
-                promotedPiece = new ChessPiece(teamTurn, promotion);
-            }
-            board.addPiece(move.getEndPosition(), promotedPiece);
-            board.removePiece(move.getStartPosition());
-
-//            if (teamTurn == TeamColor.WHITE) {
-//                teamTurn = TeamColor.BLACK;
-//            }
-//            else {
-//                teamTurn = TeamColor.WHITE;
-//            }
-//        }
+        ChessPiece startingPiece = board.getPiece(move.getStartPosition());
+        ChessPiece.PieceType promotion = move.getPromotionPiece();
+        ChessPiece promotedPiece = startingPiece;
+        if (promotion != null) {
+            promotedPiece = new ChessPiece(teamTurn, promotion);
+        }
+        board.addPiece(move.getEndPosition(), promotedPiece);
+        board.removePiece(move.getStartPosition());
     }
 
     /**
@@ -499,7 +494,6 @@ public class ChessGame {
                         theoreticalGame.makeMove(cm);
                     } catch (InvalidMoveException e) {
                         // potential serious problem, throws lots of exceptions but passed test cases
-                        // System.out.println("Invalid move");
                     }
                     // if the move gets the king out of check
                     if (!checkHelper(teamColor, theoreticalGame.getBoard())) {
@@ -538,7 +532,6 @@ public class ChessGame {
                         theoreticalGame.forceMove(cm);
                     } catch (InvalidMoveException e) {
                         // potential serious problem, throws lots of exceptions but passed test cases
-                        // System.out.println("Invalid move");
                     }
                     // if the move gets the king out of check
                     if (!checkHelper(teamColor, theoreticalGame.getBoard())) {

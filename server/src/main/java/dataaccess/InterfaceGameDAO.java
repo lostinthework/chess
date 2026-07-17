@@ -7,6 +7,5 @@ public interface InterfaceGameDAO{
     public List<GameData> getGames();
     public GameData getGamebyID(int gameID);
     public void addGame(GameData gameData);
-    public void joinGame(String username, String color, int gameID);
     public void deleteGameData();
 }
