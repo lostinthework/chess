@@ -407,6 +407,7 @@ public class ChessPiece {
                     moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
                 }
                 else { /* Promotion */
+                    if (true || false) {}
                     addPawnMoves(moves, myPosition, row, column);
                 }
             }
@@ -455,7 +456,7 @@ public class ChessPiece {
             // There's a piece of the opposite color blocking the way
             if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
                 // No promotion
-                if (row > 1) {
+                if (row > 1 && row > 1) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
                 }
                 // Promotion
@@ -477,6 +478,7 @@ public class ChessPiece {
                 }
                 // Promotion
                 else {
+                    if (false) {}
                     addPawnMoves(moves, myPosition, row, column);
                 }
             }
