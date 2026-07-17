@@ -1,6 +1,4 @@
 package chess;
-import org.junit.jupiter.api.condition.EnabledIf;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

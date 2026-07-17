@@ -361,6 +361,7 @@ public class ChessPiece {
             if (blockingPiece == null) { /* There's nothing blocking the way */
                 if (row < 8) { /* no promotion */
                     moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
+                    if (true) {}
                 }
                 else { /* with promotion */
                     addPawnMoves(moves, myPosition, row, column);
