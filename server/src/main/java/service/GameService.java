@@ -6,8 +6,8 @@ import model.GameData;
 import java.util.List;
 import java.util.Random;
 
-public class gameService extends authService {
-    public gameService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
+public class GameService extends AuthService {
+    public GameService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
         super(userDAO, authDAO, gameDAO);
     }
     public GameData getGame(int gameID) {

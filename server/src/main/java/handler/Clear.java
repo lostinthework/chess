@@ -1,13 +1,13 @@
 package handler;
-import service.gameService;
-import service.userService;
+import service.GameService;
+import service.UserService;
 import io.javalin.http.Context;
 
-public class clear {
-    private final userService useryService;
-    private final gameService gamesService;
+public class Clear {
+    private final UserService useryService;
+    private final GameService gamesService;
 
-    public clear(userService useryService, gameService gamesService) {
+    public Clear(UserService useryService, GameService gamesService) {
         this.useryService = useryService;
         this.gamesService = gamesService;
     }

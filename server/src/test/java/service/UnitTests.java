@@ -22,9 +22,9 @@ public class UnitTests {
     private InterfaceAuthDAO authDAO;
     private InterfaceGameDAO gameDAO;
 
-    private authService authyService;
-    private gameService gamesService;
-    private userService useryService;
+    private AuthService authyService;
+    private GameService gamesService;
+    private UserService useryService;
 
     @BeforeEach
     public void setuptests() {
@@ -32,9 +32,9 @@ public class UnitTests {
         authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
 
-        authyService = new authService(userDAO, authDAO, gameDAO);
-        gamesService = new gameService(userDAO, authDAO, gameDAO);
-        useryService = new userService(userDAO, authDAO, gameDAO);
+        authyService = new AuthService(userDAO, authDAO, gameDAO);
+        gamesService = new GameService(userDAO, authDAO, gameDAO);
+        useryService = new UserService(userDAO, authDAO, gameDAO);
 
     }
 
@@ -179,7 +179,7 @@ public class UnitTests {
     @DisplayName("Register Positive")
     public void registerPositive() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        RegisterResult result = useryService.register(user);
+        RegisterResult result = useryService.Register(user);
         assertNotNull(result);
     }
 
@@ -188,8 +188,8 @@ public class UnitTests {
     @DisplayName("Register Negative")
     public void registerNegative() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        useryService.register(user);
-        assertThrows(DataAccessException.class, () -> {useryService.register(user);});
+        useryService.Register(user);
+        assertThrows(DataAccessException.class, () -> {useryService.Register(user);});
     }
 
     @Test
@@ -197,8 +197,8 @@ public class UnitTests {
     @DisplayName("Login Positive")
     public void loginPositive() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        useryService.register(user);
-        LoginResult result = useryService.login("username", "password");
+        useryService.Register(user);
+        LoginResult result = useryService.Login("username", "password");
         assertNotNull(result);
     }
 
@@ -207,8 +207,8 @@ public class UnitTests {
     @DisplayName("Login Negative")
     public void loginNegative() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        useryService.register(user);
-        assertThrows(DataAccessException.class, () -> {useryService.login("username", "passwords");});
+        useryService.Register(user);
+        assertThrows(DataAccessException.class, () -> {useryService.Login("username", "passwords");});
     }
 
     @Test
@@ -216,8 +216,8 @@ public class UnitTests {
     @DisplayName("Logout Positive")
     public void logoutPositive() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        RegisterResult result = useryService.register(user);
-        useryService.logout(result.getAuthToken());
+        RegisterResult result = useryService.Register(user);
+        useryService.Logout(result.getAuthToken());
         assertNotNull(result.getAuthToken());
     }
 
@@ -226,8 +226,8 @@ public class UnitTests {
     @DisplayName("Login Negative")
     public void logoutNegative() throws DataAccessException {
         UserData user = new UserData("username", "password", "email");
-        RegisterResult result = useryService.register(user);
-        assertThrows(DataAccessException.class, () -> {useryService.logout(null);});
+        RegisterResult result = useryService.Register(user);
+        assertThrows(DataAccessException.class, () -> {useryService.Logout(null);});
     }
 
 

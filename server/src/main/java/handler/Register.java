@@ -4,14 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.UserData;
-import service.userService;
+import service.UserService;
 import io.javalin.http.Context;
 
 
-public class register {
-    private final userService useryService;
+public class Register {
+    private final UserService useryService;
 
-    public register(userService useryService) {
+    public Register(UserService useryService) {
         this.useryService = useryService;
     }
     public void handle(Context ctx) throws DataAccessException {
@@ -34,7 +34,7 @@ public class register {
 
         // Register
         try {
-            var registerResult = useryService.register(user);
+            var registerResult = useryService.Register(user);
             ctx.result(gson.toJson(registerResult));
         }
         catch (DataAccessException e) {

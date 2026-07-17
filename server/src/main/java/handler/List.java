@@ -2,14 +2,14 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.gameService;
+import service.GameService;
 import io.javalin.http.Context;
 import java.util.Map;
 
-public class list {
-    private final gameService gamesService;
+public class List {
+    private final GameService gamesService;
 
-    public list(gameService gamesService) {
+    public List(GameService gamesService) {
         this.gamesService = gamesService;
     }
 

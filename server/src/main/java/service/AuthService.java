@@ -1,18 +1,17 @@
 package service;
 
-import dataaccess.DataAccessException;
 import dataaccess.InterfaceAuthDAO;
 import dataaccess.InterfaceGameDAO;
 import dataaccess.InterfaceUserDAO;
 import model.AuthData;
 
-public class authService {
+public class AuthService {
 
     public dataaccess.InterfaceUserDAO userDAO;
     public dataaccess.InterfaceAuthDAO authDAO;
     public dataaccess.InterfaceGameDAO gameDAO;
 
-    public authService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
+    public AuthService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;

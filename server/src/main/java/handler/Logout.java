@@ -2,15 +2,13 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.userService;
+import service.UserService;
 import io.javalin.http.Context;
 
-import java.util.Map;
+public class Logout {
+    private final UserService useryService;
 
-public class logout {
-    private final userService useryService;
-
-    public logout(userService useryService) {
+    public Logout(UserService useryService) {
         this.useryService = useryService;
     }
 
@@ -22,7 +20,7 @@ public class logout {
         String authToken = ctx.header("Authorization");
         try {
             // Logout
-            useryService.logout(authToken);
+            useryService.Logout(authToken);
         }
         catch (DataAccessException e) {
             ctx.status(401);

@@ -8,13 +8,13 @@ import model.AuthData;
 import model.UserData;
 import java.util.UUID;
 
-public class userService extends authService {
-    public userService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
-        // super from authService
+public class UserService extends AuthService {
+    public UserService(InterfaceUserDAO userDAO, InterfaceAuthDAO authDAO, InterfaceGameDAO gameDAO) {
+        // super from AuthService
         super(userDAO, authDAO, gameDAO);
     }
 
-    public RegisterResult register(UserData userData) throws DataAccessException {
+    public RegisterResult Register(UserData userData) throws DataAccessException {
         var user = userDAO.checkUser(userData.getUsername());
         // Check if the requested username has already been taken
         if (user != null) {
@@ -29,7 +29,7 @@ public class userService extends authService {
         return new RegisterResult(userData.getUsername(), authToken);
     }
 
-    public LoginResult login(String username, String password) throws DataAccessException {
+    public LoginResult Login(String username, String password) throws DataAccessException {
         // check if the username was correct
         var user = userDAO.getUser(username, password);
         if (user == null) {
@@ -41,7 +41,7 @@ public class userService extends authService {
         return new LoginResult(username, authToken);
     }
 
-    public void logout(String authToken) throws DataAccessException {
+    public void Logout(String authToken) throws DataAccessException {
         // Check authToken
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {

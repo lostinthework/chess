@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.GameData;
-import service.gameService;
+import service.GameService;
 import io.javalin.http.Context;
 
 import java.util.Map;
 
-public class join {
-    private final gameService gamesService;
+public class Join {
+    private final GameService gamesService;
 
-    public join(gameService gamesService) {
+    public Join(GameService gamesService) {
         this.gamesService = gamesService;
     }
 
@@ -67,7 +67,7 @@ public class join {
         }
 
         // Join game
-        gametoJoin.join(gamesService.getUsername(authToken), color);
+        gametoJoin.Join(gamesService.getUsername(authToken), color);
         ctx.result("{}");
     }
 }

@@ -32,7 +32,7 @@ public class GameData {
         return gameName;
     }
 
-    public void join(String username, String color) {
+    public void Join(String username, String color) {
         // Join the game depending on color
         if (color.equals("WHITE")) {
             whiteUsername = username;

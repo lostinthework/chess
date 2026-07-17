@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.UserData;
-import service.userService;
+import service.UserService;
 import io.javalin.http.Context;
 
-public class login {
-    private final userService useryService;
+public class Login {
+    private final UserService useryService;
 
-    public login(userService useryService) {
+    public Login(UserService useryService) {
         this.useryService = useryService;
     }
 
@@ -34,7 +34,7 @@ public class login {
 
         // Login
         try {
-            var loginResult = useryService.login(user.getUsername(), user.getPassword());
+            var loginResult = useryService.Login(user.getUsername(), user.getPassword());
             ctx.result(gson.toJson(loginResult));
         }
         catch (DataAccessException e) {

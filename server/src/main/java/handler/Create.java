@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
 import model.GameData;
-import service.gameService;
+import service.GameService;
 import io.javalin.http.Context;
 
 import java.util.Map;
 
-public class create {
-    private final gameService gamesService;
+public class Create {
+    private final GameService gamesService;
 
-    public create(gameService gamesService) {
+    public Create(GameService gamesService) {
         this.gamesService = gamesService;
     }
 
