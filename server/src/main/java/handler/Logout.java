@@ -20,7 +20,7 @@ public class Logout {
         String authToken = ctx.header("Authorization");
         try {
             // Logout
-            useryService.Logout(authToken);
+            useryService.logout(authToken);
         }
         catch (DataAccessException e) {
             ctx.status(401);

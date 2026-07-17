@@ -14,7 +14,7 @@ public class UserService extends AuthService {
         super(userDAO, authDAO, gameDAO);
     }
 
-    public RegisterResult Register(UserData userData) throws DataAccessException {
+    public RegisterResult register(UserData userData) throws DataAccessException {
         var user = userDAO.checkUser(userData.getUsername());
         // Check if the requested username has already been taken
         if (user != null) {
@@ -29,7 +29,7 @@ public class UserService extends AuthService {
         return new RegisterResult(userData.getUsername(), authToken);
     }
 
-    public LoginResult Login(String username, String password) throws DataAccessException {
+    public LoginResult login(String username, String password) throws DataAccessException {
         // check if the username was correct
         var user = userDAO.getUser(username, password);
         if (user == null) {
@@ -41,7 +41,7 @@ public class UserService extends AuthService {
         return new LoginResult(username, authToken);
     }
 
-    public void Logout(String authToken) throws DataAccessException {
+    public void logout(String authToken) throws DataAccessException {
         // Check authToken
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {

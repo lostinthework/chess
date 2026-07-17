@@ -24,6 +24,7 @@ public class Join {
         String authToken;
         authToken = ctx.header("Authorization");
         try {
+            // Check if unauthorized
             if (gamesService.getAuth(authToken) == null) {
                 throw new DataAccessException("Error: unauthorized");
             }
@@ -67,7 +68,7 @@ public class Join {
         }
 
         // Join game
-        gametoJoin.Join(gamesService.getUsername(authToken), color);
+        gametoJoin.join(gamesService.getUsername(authToken), color);
         ctx.result("{}");
     }
 }

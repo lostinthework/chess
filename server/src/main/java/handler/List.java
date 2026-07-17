@@ -17,7 +17,6 @@ public class List {
         var gson = new Gson();
         ctx.contentType("application/json");
 
-        // Verify authentication
         String authToken;
         authToken = ctx.header("Authorization");
         try {

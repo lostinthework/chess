@@ -7,52 +7,39 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * For a class that can manage a chess game, making moves on a board
+/**For a class that can manage a chess game, making moves on a board
  * <p>
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
 public class ChessGame {
-
     private List<ChessMove> moveLog = new ArrayList<ChessMove>();
     private TeamColor teamTurn;
     private ChessBoard board;
-
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
     }
-
     public static ChessGame copyOf(ChessGame original) {
         ChessGame copy = new ChessGame();
         copy.teamTurn = original.teamTurn;
         copy.board = ChessBoard.copyOf(original.board);
         return copy;
     }
-
     public ChessGame(ChessGame o) {
         teamTurn = o.teamTurn;
         board = o.board;
     }
-
-    /**
-     * @return Which team's turn it is
-     */
+    // @return Which team's turn it is
     public TeamColor getTeamTurn() {
         return teamTurn;
     }
-
-    /**
-     * Set's which teams turn it is
-     *
-     * @param team the team whose turn it is
-     */
+    // Set's which teams turn it is
+    // @param team the team whose turn it is
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
     }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -61,27 +48,20 @@ public class ChessGame {
         ChessGame chessGame = (ChessGame) o;
         return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(teamTurn, board);
     }
-
-    /**
-     * Enum identifying the 2 possible teams in a chess game
-     */
+    // Enum identifying the 2 possible teams in a chess game
     public enum TeamColor {
         WHITE,
         BLACK
     }
-
-    /**
-     * Gets all valid moves for a piece at the given location
-     *
+    /** Gets all valid moves for a piece at the given location
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for the requested piece, or null if no piece at
      * startPosition
-     */
+     **/
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> naïveMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
         Collection<ChessMove> actualMoves = new ArrayList<>(naïveMoves);
@@ -103,226 +83,224 @@ public class ChessGame {
                 }
             }
             // En Passant
-            if (/* the piece being moved is a pawn */
-                board.getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
-                    /* there was a move already made */
-                    !moveLog.isEmpty() &&
-                    /* the last move was a pawn */
-                    board.getPiece(moveLog.getLast().getEndPosition()).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
-                    /* the enemy pawn moved to row 4 from row 2 if it's white or */
-                    ((moveLog.getLast().getEndPosition().getRow() == 4 &&
-                    moveLog.getLast().getStartPosition().getRow() == 2 &&
-                    board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.WHITE)) ||
-                        /* the enemy pawn moved to row 5 from row 7 if it's black */
-                        (moveLog.getLast().getEndPosition().getRow() == 5 &&
-                        moveLog.getLast().getStartPosition().getRow() == 7 &&
-                        board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.BLACK))) &&
-                    /* the starting position row is the same as the enemy pawn */
-                    startPosition.getRow() == moveLog.getLast().getEndPosition().getRow() &&
-                    /* the starting column is one more than the enemy pawn or */
-                    (startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() + 1 ||
-                        /* the starting column is one less than the enemy pawn */
-                        startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() - 1)
-            ) {
-
-                ChessMove enPassant;
-                if (teamColor == TeamColor.WHITE) {
-                    enPassant = new ChessMove(startPosition,
-                            new ChessPosition(moveLog.getLast().getEndPosition().getRow() + 1,
-                                    moveLog.getLast().getEndPosition().getColumn()),
-                            null);
-                } else {
-                    enPassant = new ChessMove(startPosition,
-                            new ChessPosition(moveLog.getLast().getEndPosition().getRow() - 1,
-                                    moveLog.getLast().getEndPosition().getColumn()),
-                            null);
-                }
-                actualMoves.add(enPassant);
-                /* the move would not result in the king being in check */
-                ChessGame theoreticalGame = copyOf(this);
-                try {
-                    theoreticalGame.forceMove(enPassant);
-                } catch (InvalidMoveException e) {
-                    actualMoves.remove(enPassant);
-                }
-                // if the move puts the king in check
-                if (checkHelper(teamColor, theoreticalGame.getBoard())) {
-                    actualMoves.remove(enPassant);
-                }
-            }
+            addEnPassantMoves(startPosition, teamColor, actualMoves);
             // Castle
             if (teamColor == TeamColor.WHITE) {
-                /* The king is not in check */
-                if (!isInCheck(TeamColor.WHITE)) {
-                    /* Never moved king */
-                    ChessMove castle;
-                    boolean neverMovedKing = true;
-                    boolean neverMovedKingRook = true;
-                    boolean neverMovedQueenRook = true;
+                addWhiteCastlingMoves(startPosition, teamColor, actualMoves);
+            }
+            else {
+                addBlackCastlingMoves(startPosition, teamColor, actualMoves);
+            }
+        }
+        return actualMoves;
+    }
+    void addWhiteCastlingMoves(ChessPosition startPosition, TeamColor teamColor, Collection<ChessMove> actualMoves) {
+        /* The king is not in check */
+        if (!isInCheck(TeamColor.WHITE)) {
+            /* Never moved king */
+            ChessMove castle;
+            boolean neverMovedKing = true;
+            boolean neverMovedKingRook = true;
+            boolean neverMovedQueenRook = true;
+            for (ChessMove cm : moveLog) {
+                if (cm.getStartPosition().equals(new ChessPosition(1, 5))) {
+                    neverMovedKing = false;
+                    break;
+                }
+            }
+            if (!board.getPosition(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING)).equals(new ChessPosition(1, 5))) {
+                neverMovedKing = false;
+            }
+            if (neverMovedKing) {
+                /* There are no pieces between the king and king-side rook */
+                if (board.getPiece(new ChessPosition(1, 6)) == null &&
+                        board.getPiece(new ChessPosition(1, 7)) == null) {
+                    /* Never moved king-side rook */
                     for (ChessMove cm : moveLog) {
-                        if (cm.getStartPosition().equals(new ChessPosition(1, 5))) {
-                            neverMovedKing = false;
+                        if (cm.getStartPosition().equals(new ChessPosition(1, 8))) {
+                            neverMovedKingRook = false;
                             break;
                         }
                     }
-                    if (!board.getPosition(new ChessPiece(TeamColor.WHITE, ChessPiece.PieceType.KING)).equals(new ChessPosition(1, 5))) {
-                        neverMovedKing = false;
-                    }
-                    if (neverMovedKing) {
-                        /* There are no pieces between the king and king-side rook */
-                        if (board.getPiece(new ChessPosition(1, 6)) == null &&
-                            board.getPiece(new ChessPosition(1, 7)) == null) {
-                            /* Never moved king-side rook */
-                            for (ChessMove cm : moveLog) {
-                                if (cm.getStartPosition().equals(new ChessPosition(1, 8))) {
-                                    neverMovedKingRook = false;
-                                    break;
-                                }
+                    if (neverMovedKingRook) {
+                        castle = new ChessMove(startPosition, new ChessPosition(1, 7), null);
+                        actualMoves.add(castle);
+                        /* The king would be in check if it moved to a square that it needs to pass through to castle */
+                        for (int i = 0; i < 3; i++) {
+                            // make a theoretical game where the move is made
+                            ChessGame theoreticalGame = copyOf(this);
+                            try {
+                                theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(1, 5 + i), null));
+                            } catch (InvalidMoveException e) {
+                                actualMoves.remove(castle);
                             }
-                            if (neverMovedKingRook) {
-                                castle = new ChessMove(startPosition, new ChessPosition(1, 7), null);
-                                actualMoves.add(castle);
-                                /* The king would be in check if it moved to a square that it needs to pass through to castle */
-                                for (int i = 0; i < 3; i++) {
-                                    // make a theoretical game where the move is made
-                                    ChessGame theoreticalGame = copyOf(this);
-                                    try {
-                                        theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(1, 5 + i), null));
-                                    } catch (InvalidMoveException e) {
-                                        actualMoves.remove(castle);
-                                    }
-                                    // if the move puts the king in check
-                                    if (checkHelper(teamColor, theoreticalGame.getBoard())) {
-                                        actualMoves.remove(castle);
-                                    }
-                                }
-                            }
-                        }
-                        /* There are no pieces between the king and queen-side rook */
-                        if (board.getPiece(new ChessPosition(1, 4)) == null &&
-                            board.getPiece(new ChessPosition(1, 3)) == null &&
-                            board.getPiece(new ChessPosition(1, 2)) == null) {
-                            /* Never moved king-side rook */
-                            for (ChessMove cm : moveLog) {
-                                if (cm.getStartPosition().equals(new ChessPosition(1, 1))) {
-                                    neverMovedQueenRook = false;
-                                    break;
-                                }
-                            }
-                            if (neverMovedQueenRook) {
-                                castle = new ChessMove(startPosition, new ChessPosition(1, 3), null);
-                                actualMoves.add(castle);
-                                /* The king would be in check if it moved to a square that it needs to pass through to castle */
-                                for (int i = 0; i < 3; i++) {
-                                    // make a theoretical game where the move is made
-                                    ChessGame theoreticalGame = copyOf(this);
-                                    try {
-                                        theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(1, 5 - i), null));
-                                    } catch (InvalidMoveException e) {
-                                        actualMoves.remove(castle);
-                                    }
-                                    // if the move puts the king in check
-                                    if (checkHelper(teamColor, theoreticalGame.getBoard())) {
-                                        actualMoves.remove(castle);
-                                    }
-                                }
+                            // if the move puts the king in check
+                            if (checkHelper(teamColor, theoreticalGame.getBoard())) {
+                                actualMoves.remove(castle);
                             }
                         }
                     }
                 }
-            }
-            else {
-                /* The king is not in check */
-                if (!isInCheck(TeamColor.BLACK)) {
-                    /* Never moved king */
-                    ChessMove castle;
-                    boolean neverMovedKing = true;
-                    boolean neverMovedKingRook = true;
-                    boolean neverMovedQueenRook = true;
+                /* There are no pieces between the king and queen-side rook */
+                if (board.getPiece(new ChessPosition(1, 4)) == null &&
+                        board.getPiece(new ChessPosition(1, 3)) == null &&
+                        board.getPiece(new ChessPosition(1, 2)) == null) {
+                    /* Never moved king-side rook */
                     for (ChessMove cm : moveLog) {
-                        if (cm.getStartPosition().equals(new ChessPosition(8, 5))) {
-                            neverMovedKing = false;
+                        if (cm.getStartPosition().equals(new ChessPosition(1, 1))) {
+                            neverMovedQueenRook = false;
                             break;
                         }
                     }
-                    if (!board.getPosition(new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.KING)).equals(new ChessPosition(8, 5))) {
-                        neverMovedKing = false;
-                    }
-                    if (neverMovedKing) {
-                        /* There are no pieces between the king and king-side rook */
-                        if (board.getPiece(new ChessPosition(8, 6)) == null &&
-                            board.getPiece(new ChessPosition(8, 7)) == null) {
-                            /* Never moved king-side rook */
-                            for (ChessMove cm : moveLog) {
-                                if (cm.getStartPosition().equals(new ChessPosition(8, 8))) {
-                                    neverMovedKingRook = false;
-                                    break;
-                                }
+                    if (neverMovedQueenRook) {
+                        castle = new ChessMove(startPosition, new ChessPosition(1, 3), null);
+                        actualMoves.add(castle);
+                        /* The king would be in check if it moved to a square that it needs to pass through to castle */
+                        for (int i = 0; i < 3; i++) {
+                            // make a theoretical game where the move is made
+                            ChessGame theoreticalGame = copyOf(this);
+                            try {
+                                theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(1, 5 - i), null));
+                            } catch (InvalidMoveException e) {
+                                actualMoves.remove(castle);
                             }
-                            if (neverMovedKingRook) {
-                                castle = new ChessMove(startPosition, new ChessPosition(8, 7), null);
-                                actualMoves.add(castle);
-                                /* The king would be in check if it moved to a square that it needs to pass through to castle */
-                                for (int i = 0; i < 3; i++) {
-                                    // make a theoretical game where the move is made
-                                    ChessGame theoreticalGame = copyOf(this);
-                                    try {
-                                        theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(8, 5 + i), null));
-                                    } catch (InvalidMoveException e) {
-                                        actualMoves.remove(castle);
-                                    }
-                                    // if the move puts the king in check
-                                    if (checkHelper(teamColor, theoreticalGame.getBoard())) {
-                                        actualMoves.remove(castle);
-                                    }
-                                }
-                            }
-                        }
-                        /* There are no pieces between the king and queen-side rook */
-                        if (board.getPiece(new ChessPosition(8, 4)) == null &&
-                            board.getPiece(new ChessPosition(8, 3)) == null &&
-                            board.getPiece(new ChessPosition(8, 2)) == null) {
-                            /* Never moved king-side rook */
-                            for (ChessMove cm : moveLog) {
-                                if (cm.getStartPosition().equals(new ChessPosition(8, 1))) {
-                                    neverMovedQueenRook = false;
-                                    break;
-                                }
-                            }
-                            if (neverMovedQueenRook) {
-                                castle = new ChessMove(startPosition, new ChessPosition(8, 3), null);
-                                actualMoves.add(castle);
-                                /* The king would be in check if it moved to a square that it needs to pass through to castle */
-                                for (int i = 0; i < 3; i++) {
-                                    // make a theoretical game where the move is made
-                                    ChessGame theoreticalGame = copyOf(this);
-                                    try {
-                                        theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(8, 5 - i), null));
-                                    } catch (InvalidMoveException e) {
-                                        actualMoves.remove(castle);
-                                    }
-                                    // if the move puts the king in check
-                                    if (checkHelper(teamColor, theoreticalGame.getBoard())) {
-                                        actualMoves.remove(castle);
-                                    }
-                                }
+                            // if the move puts the king in check
+                            if (checkHelper(teamColor, theoreticalGame.getBoard())) {
+                                actualMoves.remove(castle);
                             }
                         }
                     }
                 }
             }
         }
-        return actualMoves;
     }
-
-    /**
-     * Makes a move in a chess game
-     *
+    void addBlackCastlingMoves(ChessPosition startPosition, TeamColor teamColor, Collection<ChessMove> actualMoves) {
+        /* The king is not in check */
+        if (!isInCheck(TeamColor.BLACK)) {
+            /* Never moved king */
+            ChessMove castle;
+            boolean neverMovedKing = true;
+            boolean neverMovedKingRook = true;
+            boolean neverMovedQueenRook = true;
+            for (ChessMove cm : moveLog) {
+                if (cm.getStartPosition().equals(new ChessPosition(8, 5))) {
+                    neverMovedKing = false;
+                    break;
+                }
+            }
+            if (!board.getPosition(new ChessPiece(TeamColor.BLACK, ChessPiece.PieceType.KING)).equals(new ChessPosition(8, 5))) {
+                neverMovedKing = false;
+            }
+            if (neverMovedKing) {
+                /* There are no pieces between the king and king-side rook */
+                if (board.getPiece(new ChessPosition(8, 6)) == null &&
+                        board.getPiece(new ChessPosition(8, 7)) == null) {
+                    /* Never moved king-side rook */
+                    for (ChessMove cm : moveLog) {
+                        if (cm.getStartPosition().equals(new ChessPosition(8, 8))) {
+                            neverMovedKingRook = false;
+                            break;
+                        }
+                    }
+                    if (neverMovedKingRook) {
+                        castle = new ChessMove(startPosition, new ChessPosition(8, 7), null);
+                        actualMoves.add(castle);
+                        /* The king would be in check if it moved to a square that it needs to pass through to castle */
+                        for (int i = 0; i < 3; i++) {
+                            // make a theoretical game where the move is made
+                            ChessGame theoreticalGame = copyOf(this);
+                            try {
+                                theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(8, 5 + i), null));
+                            } catch (InvalidMoveException e) {
+                                actualMoves.remove(castle);
+                            }
+                            // if the move puts the king in check
+                            if (checkHelper(teamColor, theoreticalGame.getBoard())) {
+                                actualMoves.remove(castle);
+                            }
+                        }
+                    }
+                }
+                /* There are no pieces between the king and queen-side rook */
+                if (board.getPiece(new ChessPosition(8, 4)) == null &&
+                        board.getPiece(new ChessPosition(8, 3)) == null &&
+                        board.getPiece(new ChessPosition(8, 2)) == null) {
+                    /* Never moved king-side rook */
+                    for (ChessMove cm : moveLog) {
+                        if (cm.getStartPosition().equals(new ChessPosition(8, 1))) {
+                            neverMovedQueenRook = false;
+                            break;
+                        }
+                    }
+                    if (neverMovedQueenRook) {
+                        castle = new ChessMove(startPosition, new ChessPosition(8, 3), null);
+                        actualMoves.add(castle);
+                        /* The king would be in check if it moved to a square that it needs to pass through to castle */
+                        for (int i = 0; i < 3; i++) {
+                            // make a theoretical game where the move is made
+                            ChessGame theoreticalGame = copyOf(this);
+                            try {
+                                theoreticalGame.forceMove(new ChessMove(startPosition, new ChessPosition(8, 5 - i), null));
+                            } catch (InvalidMoveException e) {
+                                actualMoves.remove(castle);
+                            }
+                            // if the move puts the king in check
+                            if (checkHelper(teamColor, theoreticalGame.getBoard())) {
+                                actualMoves.remove(castle);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    void addEnPassantMoves(ChessPosition startPosition, TeamColor teamColor, Collection<ChessMove> actualMoves) {
+        if (/* the piece being moved is a pawn */
+                board.getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
+                        /* there was a move already made */
+                        !moveLog.isEmpty() &&
+                        /* the last move was a pawn */
+                        board.getPiece(moveLog.getLast().getEndPosition()).getPieceType().equals(ChessPiece.PieceType.PAWN) &&
+                        /* the enemy pawn moved to row 4 from row 2 if it's white or */
+                        ((moveLog.getLast().getEndPosition().getRow() == 4 &&
+                                moveLog.getLast().getStartPosition().getRow() == 2 &&
+                                board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.WHITE)) ||
+                                /* the enemy pawn moved to row 5 from row 7 if it's black */
+                                (moveLog.getLast().getEndPosition().getRow() == 5 &&
+                                        moveLog.getLast().getStartPosition().getRow() == 7 &&
+                                        board.getPiece(moveLog.getLast().getEndPosition()).getTeamColor().equals(TeamColor.BLACK))) &&
+                        /* the starting position row is the same as the enemy pawn */
+                        startPosition.getRow() == moveLog.getLast().getEndPosition().getRow() &&
+                        /* the starting column is one more than the enemy pawn or */
+                        (startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() + 1 ||
+                                /* the starting column is one less than the enemy pawn */
+                                startPosition.getColumn() == moveLog.getLast().getEndPosition().getColumn() - 1)
+        ) {
+            ChessMove enPassant = getEnPassant(startPosition, teamColor);
+            actualMoves.add(enPassant);
+            /* the move would not result in the king being in check */
+            ChessGame theoreticalGame = copyOf(this);
+            try {
+                theoreticalGame.forceMove(enPassant);
+            } catch (InvalidMoveException e) {
+                actualMoves.remove(enPassant);
+            }
+            // if the move puts the king in check
+            if (checkHelper(teamColor, theoreticalGame.getBoard())) {
+                actualMoves.remove(enPassant);
+            }
+        }
+    }
+    private ChessMove getEnPassant(ChessPosition startPosition, TeamColor teamColor) {
+        int rowOffset = (teamColor == TeamColor.WHITE) ? 1 : -1;
+        ChessPosition endPosition = moveLog.getLast().getEndPosition();
+        return new ChessMove(startPosition, new ChessPosition(endPosition.getRow() + rowOffset, endPosition.getColumn()), null);
+    }
+    /**Makes a move in a chess game
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
-     */
+     **/
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
         // the piece doesn't exist or
         if (board.getPiece(move.getStartPosition()) == null ||
             /* it's not the right turn or */
@@ -413,10 +391,7 @@ public class ChessGame {
             moveLog.add(move);
         }
     }
-
-    /**
-     * Makes a move (even if it results in the king being checked) in a chess game
-     *
+    /**Makes a move (even if it results in the king being checked) in a chess game
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid for some other reason
      */
@@ -430,20 +405,14 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), promotedPiece);
         board.removePiece(move.getStartPosition());
     }
-
-    /**
-     * Determines if the given team is in check
-     *
+    /**Determines if the given team is in check
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
         return checkHelper(teamColor, board);
     }
-
-    /**
-     * Determines if the given team is in check
-     *
+    /**Determines if the given team is in check
      * @param teamColor which team to check for check
      * @param currentBoard the chessboard to use
      * @return True if the specified team is in check
@@ -465,102 +434,63 @@ public class ChessGame {
             // check if the end position of any move is the kingPosition
             for (ChessMove cm : possibleMoves) {
                 if (cm.getEndPosition().equals(kingPosition)) {
-                    //System.out.println("caught");
                     return true;
                 }
             }
         }
-        //System.out.println("here");
         return false;
     }
-
-    /**
-     * Determines if the given team is in checkmate
-     *
+    /**Determines if the given team is in checkmate
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        // If the king is not in check
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-        else {
-            // get every piece of the same color as the king
-            Collection<ChessPosition> friendlyPieces = board.getPieces(teamColor);
-            // go through each one of those pieces
-            for (ChessPosition cp : friendlyPieces) {
-                // get the moves that the piece can make
-                Collection<ChessMove> moves = board.getPiece(cp).pieceMoves(board, cp);
-                // go through each move
-                for (ChessMove cm : moves) {
-                    // make a theoretical game where the move is made
-                    ChessGame theoreticalGame = copyOf(this);
-                    try {
+    public boolean hasNoLegalMove(TeamColor teamColor, boolean validateMove) {
+        // get every piece of the same color as the king
+        Collection<ChessPosition> friendlyPieces = board.getPieces(teamColor);
+        // go through each one of those pieces
+        for (ChessPosition cp : friendlyPieces) {
+            // get the moves that the piece can make
+            Collection<ChessMove> moves = board.getPiece(cp).pieceMoves(board, cp);
+            // go through each move
+            for (ChessMove cm : moves) {
+                // make a theoretical game where the move is made
+                ChessGame theoreticalGame = copyOf(this);
+                try {
+                    if (validateMove) {
                         theoreticalGame.makeMove(cm);
-                    } catch (InvalidMoveException e) {
-                        // potential serious problem, throws lots of exceptions but passed test cases
                     }
-                    // if the move gets the king out of check
-                    if (!checkHelper(teamColor, theoreticalGame.getBoard())) {
-                        return false;
+                    else {
+                        theoreticalGame.forceMove(cm);
                     }
+                } catch (InvalidMoveException e) {
+                    // potential serious problem, throws lots of exceptions but passed test cases
+                }
+                // if the move gets the king out of check
+                if (!checkHelper(teamColor, theoreticalGame.getBoard())) {
+                    return false;
                 }
             }
-            return true;
         }
+        return true;
     }
-
-    /**
-     * Determines if the given team is in stalemate, which here is defined as having
+    public boolean isInCheckmate(TeamColor teamColor) {
+        return isInCheck(teamColor) && hasNoLegalMove(teamColor, true);
+    }
+    /**Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
-     *
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // If the king is in check
-        if (isInCheck(teamColor)) {
-            return false;
-        }
-        else {
-            // get every piece of the same color as the king
-            Collection<ChessPosition> friendlyPieces = board.getPieces(teamColor);
-            // go through each one of those pieces
-            for (ChessPosition cp : friendlyPieces) {
-                // get the moves that the piece can make
-                Collection<ChessMove> moves = board.getPiece(cp).pieceMoves(board, cp);
-                // go through each move
-                for (ChessMove cm : moves) {
-                    // make a theoretical game where the move is made
-                    ChessGame theoreticalGame = copyOf(this);
-                    try {
-                        theoreticalGame.forceMove(cm);
-                    } catch (InvalidMoveException e) {
-                        // potential serious problem, throws lots of exceptions but passed test cases
-                    }
-                    // if the move gets the king out of check
-                    if (!checkHelper(teamColor, theoreticalGame.getBoard())) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        return !isInCheck(teamColor) && hasNoLegalMove(teamColor, false);
     }
-
-    /**
-     * Sets this game's chessboard with a given board
-     *
+    /**Sets this game's chessboard with a given board
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
         this.board = board;
     }
-
-    /**
-     * Gets the current chessboard
-     *
+    /**Gets the current chessboard
      * @return the chessboard
      */
     public ChessBoard getBoard() {

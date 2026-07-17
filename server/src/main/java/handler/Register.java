@@ -34,7 +34,7 @@ public class Register {
 
         // Register
         try {
-            var registerResult = useryService.Register(user);
+            var registerResult = useryService.register(user);
             ctx.result(gson.toJson(registerResult));
         }
         catch (DataAccessException e) {

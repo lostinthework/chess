@@ -34,7 +34,7 @@ public class Login {
 
         // Login
         try {
-            var loginResult = useryService.Login(user.getUsername(), user.getPassword());
+            var loginResult = useryService.login(user.getUsername(), user.getPassword());
             ctx.result(gson.toJson(loginResult));
         }
         catch (DataAccessException e) {
