@@ -75,9 +75,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        int row = myPosition.getRow();
-        int column = myPosition.getColumn();
-        // ArrayList<Integer> moves = new int[][]{};
         switch (type) {
 
             case KING:
@@ -85,7 +82,8 @@ public class ChessPiece {
                 break;
 
             case QUEEN:
-                moves = queenMoves(board, myPosition);
+                moves = rookMoves(board, myPosition);
+                moves.addAll(bishopMoves(board, myPosition));
                 break;
 
             case BISHOP:
@@ -208,148 +206,6 @@ public class ChessPiece {
         return moves;
     }
 
-    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
-        int row = myPosition.getRow();
-        int column = myPosition.getColumn();
-        // Moving up and to the left
-        while (row < 8 && column > 1) {
-            row += 1;
-            column -= 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        row = myPosition.getRow();
-        column = myPosition.getColumn();
-        // Moving up and to the right
-        while (row < 8 && column < 8) {
-            row += 1;
-            column += 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        row = myPosition.getRow();
-        column = myPosition.getColumn();
-        // Moving down and to the left
-        while (row > 1 && column > 1) {
-            row -= 1;
-            column -= 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        row = myPosition.getRow();
-        column = myPosition.getColumn();
-        // Moving down and to the right
-        while (row > 1 && column < 8) {
-            row -= 1;
-            column += 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        row = myPosition.getRow();
-        column = myPosition.getColumn();
-        // Moving up
-        while (row < 8) {
-            row += 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        row = myPosition.getRow();
-        // Moving right
-        while (column < 8) {
-            column += 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        column = myPosition.getColumn();
-        // Moving left
-        while (column > 1) {
-            column -= 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        column = myPosition.getColumn();
-        // Moving down
-        while (row > 1) {
-            row -= 1;
-            ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
-            // There's a piece blocking the way
-            if (blockingPiece != null) {
-                // The piece is of the opposite color
-                if (blockingPiece.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-                }
-                // Can't go any further
-                break;
-            }
-            moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
-        }
-        return moves;
-    }
-
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         int row = myPosition.getRow();
@@ -443,7 +299,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 left 1 up
         if (row < 8 && column > 2) {
             row += 1;
@@ -456,7 +311,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 left 1 down
         if (row > 1 && column > 2) {
             row -= 1;
@@ -469,7 +323,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 down 1 left
         if (row > 2 && column > 1) {
             row -= 2;
@@ -482,7 +335,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 down 1 right
         if (row > 2 && column < 8) {
             row -= 2;
@@ -495,7 +347,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 right 1 down
         if (row > 1 && column < 7) {
             row -= 1;
@@ -508,7 +359,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 right 1 up
         if (row < 8 && column < 7) {
             row += 1;
@@ -521,7 +371,6 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         column = myPosition.getColumn();
-
         // Moving 2 up 1 right
         if (row < 7 && column < 8) {
             row += 2;

@@ -21,8 +21,5 @@ public class gameService extends authService {
         gameDAO.addGame(new GameData(gameID, null, null, gameName, new ChessGame()));
         return gameID;
     }
-//    public void updateGame(String username, String color, int gameID) {
-//        gameDAO.joinGame(username, color, gameID);
-//    }
 
 }

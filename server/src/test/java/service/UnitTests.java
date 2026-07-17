@@ -71,7 +71,7 @@ public class UnitTests {
     @Test
     @Order(4)
     @DisplayName("Delete AuthData Negative")
-    public void AuthNegative() {
+    public void deleteAuthNegative() {
         AuthData auth = new AuthData("username", "authtoken");
         authDAO.deleteAuth(auth);
         AuthData result = authyService.getAuth("authtoken");

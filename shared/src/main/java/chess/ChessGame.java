@@ -127,9 +127,15 @@ public class ChessGame {
 
                 ChessMove enPassant;
                 if (teamColor == TeamColor.WHITE) {
-                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.getLast().getEndPosition().getRow() + 1, moveLog.getLast().getEndPosition().getColumn()), null);
+                    enPassant = new ChessMove(startPosition,
+                            new ChessPosition(moveLog.getLast().getEndPosition().getRow() + 1,
+                                    moveLog.getLast().getEndPosition().getColumn()),
+                            null);
                 } else {
-                    enPassant = new ChessMove(startPosition, new ChessPosition(moveLog.getLast().getEndPosition().getRow() - 1, moveLog.getLast().getEndPosition().getColumn()), null);
+                    enPassant = new ChessMove(startPosition,
+                            new ChessPosition(moveLog.getLast().getEndPosition().getRow() - 1,
+                                    moveLog.getLast().getEndPosition().getColumn()),
+                            null);
                 }
                 actualMoves.add(enPassant);
                 /* the move would not result in the king being in check */

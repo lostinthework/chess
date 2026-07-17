@@ -55,7 +55,8 @@ public class join {
         // Check that nobody has already joined the game as the desired color
         GameData gametoJoin = gamesService.getGame(gameID);
         try {
-            if ((color.equals("WHITE") && gametoJoin.getWhiteUsername() != null) || (color.equals("BLACK") && gametoJoin.getBlackUsername() != null)) {
+            if ((color.equals("WHITE") && gametoJoin.getWhiteUsername() != null) ||
+                (color.equals("BLACK") && gametoJoin.getBlackUsername() != null)) {
                 throw new DataAccessException("Error: already taken");
             }
         }
