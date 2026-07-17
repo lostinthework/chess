@@ -385,7 +385,7 @@ public class ChessPiece {
             ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
             // There's a piece of the opposite color blocking the way
             if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                if (row < 8) { /* No promotion */
+                if (row < 8) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
                 }
                 // Promotion
@@ -471,7 +471,6 @@ public class ChessPiece {
             ChessPiece blockingPiece = board.getPiece(new ChessPosition(row, column));
             // There's a piece of the opposite color blocking the way
             if (blockingPiece != null && blockingPiece.getTeamColor() != this.pieceColor) {
-                // No promotion
                 if (row > 1) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(row, column), null));
                 }
