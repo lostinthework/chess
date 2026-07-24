@@ -1,5 +1,5 @@
 package dataaccess;
 
-public class SQLAuthDAO implements InterfaceAuthDAO {
-
-}
+//public class SQLAuthDAO implements InterfaceAuthDAO {
+//
+//}

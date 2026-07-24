@@ -11,15 +11,22 @@ import java.util.Map;
 public class Server {
     private Javalin app;
 
-    private final InterfaceUserDAO userDAO = new MemoryUserDAO();
-    private final InterfaceAuthDAO authDAO = new MemoryAuthDAO();
-    private final InterfaceGameDAO gameDAO = new MemoryGameDAO();
-
-    UserService useryService = new UserService(userDAO, authDAO, gameDAO);
-    GameService gamesService = new GameService(userDAO, authDAO, gameDAO);
-
+    private InterfaceUserDAO userDAO;
+    private InterfaceAuthDAO authDAO;
+    private InterfaceGameDAO gameDAO;
 
     public int run(int desiredPort) {
+        try {
+            userDAO = new SQLUserDAO();
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't initialize database", e);
+        }
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();
+
+        UserService useryService = new UserService(userDAO, authDAO, gameDAO);
+        GameService gamesService = new GameService(userDAO, authDAO, gameDAO);
+
         app = Javalin.create(config -> {config.staticFiles.add("web");}).start(desiredPort);
 
         // Register your endpoints and handle exceptions here.
