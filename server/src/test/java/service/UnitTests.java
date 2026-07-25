@@ -121,7 +121,7 @@ public class UnitTests {
     @Order(9)
     @DisplayName("Get Game Positive")
     public void getGamePositive() {
-        GameData game = new GameData(1, "white", "black", "name", new ChessGame());
+        GameData game = new GameData(1, "white", "black", "name");
         gameDAO.addGame(game);
         GameData result = gamesService.getGame(1);
         assertNotNull(result);
@@ -140,8 +140,8 @@ public class UnitTests {
     @Order(11)
     @DisplayName("List Games Positive")
     public void listGamesPositive() {
-        GameData game1 = new GameData(1, "white", "black", "name", new ChessGame());
-        GameData game2 = new GameData(1, "white", "black", "name", new ChessGame());
+        GameData game1 = new GameData(1, "white", "black", "name");
+        GameData game2 = new GameData(1, "white", "black", "name");
         gameDAO.addGame(game1);
         gameDAO.addGame(game2);
         List<GameData> result = gamesService.getGames();

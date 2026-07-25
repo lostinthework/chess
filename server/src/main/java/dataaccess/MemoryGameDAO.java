@@ -27,6 +27,11 @@ public class MemoryGameDAO implements InterfaceGameDAO {
         games.add(gameData);
     }
 
+    public void joinGame(int gameID, String username, String color) {
+        GameData game = getGamebyID(gameID);
+        game.join(username, color);
+    }
+
     public void deleteGameData() {
         games = new ArrayList<>();
     }

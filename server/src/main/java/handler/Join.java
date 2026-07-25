@@ -68,7 +68,8 @@ public class Join {
         }
 
         // Join game
-        gametoJoin.join(gamesService.getUsername(authToken), color);
+        gamesService.joinGame(gameID, gamesService.getUsername(authToken), color);
+//        gametoJoin.join(gamesService.getUsername(authToken), color);
         ctx.result("{}");
     }
 }

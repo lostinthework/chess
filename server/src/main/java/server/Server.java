@@ -18,11 +18,12 @@ public class Server {
     public int run(int desiredPort) {
         try {
             userDAO = new SQLUserDAO();
+            gameDAO = new SQLGameDAO();
         } catch (Exception e) {
             throw new RuntimeException("Couldn't initialize database", e);
         }
         authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+
 
         UserService useryService = new UserService(userDAO, authDAO, gameDAO);
         GameService gamesService = new GameService(userDAO, authDAO, gameDAO);
