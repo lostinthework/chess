@@ -53,6 +53,23 @@ public class Server {
         // Clear application
         app.delete("/db", ctx -> new handler.Clear(useryService, gamesService).handle(ctx));
 
+        app.exception(ResponseException.class, (e, ctx) -> {
+            int status = switch (e.code) {
+                case ServerError -> 500;
+                case ClientError -> 400;
+            };
+
+            ctx.status(status);
+            ctx.contentType("application/json");
+            ctx.result(new Gson().toJson(new handler.ErrorHandler(e.getMessage())));
+        });
+
+        app.exception(DataAccessException.class, (e, ctx) -> {
+            ctx.status(500);
+            ctx.contentType("application/json");
+            ctx.result(new Gson().toJson(new handler.ErrorHandler(e.getMessage())));
+        });
+
         //This line initializes the server and can be removed once you have a functioning endpoint
         return app.port();
     }

@@ -32,11 +32,11 @@ public class SQLUserDAO implements InterfaceUserDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Error: Unable to configure database: %s", ex.getMessage()));
         }
     }
 
-    public void addUser(UserData userData) {
+    public void addUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
@@ -46,10 +46,11 @@ public class SQLUserDAO implements InterfaceUserDAO {
             ps.setString(3, userData.getEmail());
             ps.executeUpdate();
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to add User", e);
         }
     }
 
-    public UserData getUser(String username, String password) {
+    public UserData getUser(String username, String password) throws DataAccessException {
         String email = null;
         String hashedPassword = null;
         var statement = "SELECT * FROM users WHERE username = ?";
@@ -65,6 +66,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
                 return null;
             }
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to get User", e);
         }
         if (BCrypt.checkpw(password, hashedPassword)) {
             return new UserData(username, password, email);
@@ -72,7 +74,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
         return null;
     }
 
-    public UserData checkUser(String username) {
+    public UserData checkUser(String username) throws DataAccessException {
         String email = null;
         String password = null;
         var statement = "SELECT * FROM users WHERE username = ?";
@@ -88,16 +90,18 @@ public class SQLUserDAO implements InterfaceUserDAO {
                 return null;
             }
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to check user", e);
         }
         return new UserData(username, password, email);
     }
 
-    public void deleteUserData() {
+    public void deleteUserData() throws DataAccessException {
         var statement = "TRUNCATE users";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
         } catch (Exception e) {
+            throw new DataAccessException("Error: Delete user data", e);
         }
     }
 }

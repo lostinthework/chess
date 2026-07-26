@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.InterfaceAuthDAO;
 import dataaccess.InterfaceGameDAO;
 import dataaccess.InterfaceUserDAO;
@@ -18,22 +19,22 @@ public class AuthService {
     }
 
     // get authData from authToken
-    public AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) throws DataAccessException {
         return authDAO.getAuth(authToken);
     }
 
     // delete authData
-    public void deleteAuth(AuthData authData) {
+    public void deleteAuth(AuthData authData) throws DataAccessException {
         authDAO.deleteAuth(authData);
     }
 
     // get username from authToken
-    public String getUsername(String authToken) {
+    public String getUsername(String authToken) throws DataAccessException {
         return getAuth(authToken).getUsername();
     }
 
     // clear everything
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.deleteUserData();
         authDAO.deleteAuthData();
         gameDAO.deleteGameData();

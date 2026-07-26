@@ -37,11 +37,11 @@ public class SQLGameDAO implements InterfaceGameDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError, String.format("Error: Unable to configure database: %s", ex.getMessage()));
         }
     }
 
-    public List<GameData> getGames() {
+    public List<GameData> getGames() throws DataAccessException {
         List<GameData> games = new ArrayList<>();
         var statement = "SELECT * FROM games";
         try (Connection conn = DatabaseManager.getConnection();
@@ -55,11 +55,12 @@ public class SQLGameDAO implements InterfaceGameDAO {
                 }
             }
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to get game", e);
+//            return null;
         }
-        return null;
     }
 
-    public GameData getGamebyID(int gameID) {
+    public GameData getGamebyID(int gameID) throws DataAccessException {
         String whiteUsername = null;
         String blackUsername = null;
         String gameName = null;
@@ -79,11 +80,12 @@ public class SQLGameDAO implements InterfaceGameDAO {
                 return null;
             }
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to get game", e);
         }
         return new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
     }
 
-    public void addGame(GameData gameData) {
+    public void addGame(GameData gameData) throws DataAccessException {
         var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
@@ -94,20 +96,21 @@ public class SQLGameDAO implements InterfaceGameDAO {
             ps.setString(5, new Gson().toJson(gameData.getGame()));
             int rows = ps.executeUpdate();
         } catch (Exception e) {
-            System.out.println(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public void deleteGameData() {
+    public void deleteGameData() throws DataAccessException {
         var statement = "TRUNCATE games";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to delete data", e);
         }
     }
 
-    public void joinGame(int gameID, String username, String color) {
+    public void joinGame(int gameID, String username, String color) throws DataAccessException {
         System.out.println("Debugging!");
         String statement;
         if (color.equals("WHITE")) {
@@ -123,6 +126,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
             int rows = ps.executeUpdate();
             System.out.println(rows);
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to join game", e);
         }
     }
 

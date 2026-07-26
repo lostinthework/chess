@@ -34,7 +34,7 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
         }
     }
 
-    public void addAuth(AuthData authData) {
+    public void addAuth(AuthData authData) throws DataAccessException {
         var statement = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
@@ -42,30 +42,32 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
             ps.setString(2, authData.getUsername());
             ps.executeUpdate();
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to add AuthData", e);
         }
     }
 
-    public void deleteAuth(AuthData authData) {
+    public void deleteAuth(AuthData authData) throws DataAccessException {
         var statement = "DELETE FROM auths WHERE authToken = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.setString(1, authData.getauthToken());
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new DataAccessException("Error: Failed to delete AuthData", e);
         }
     }
 
-    public void deleteAuthData() {
+    public void deleteAuthData() throws DataAccessException {
         var statement = "TRUNCATE auths";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
         } catch (Exception e) {
+            throw new DataAccessException("Error: Failed to delete AuthData", e);
         }
     }
 
-    public AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) throws DataAccessException {
         String username = null;
         var statement = "SELECT * FROM auths WHERE authToken = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -79,8 +81,8 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new DataAccessException("Error: Failed to get AuthData", e);
+//            return null;
         }
         return new AuthData(username, authToken);
     }

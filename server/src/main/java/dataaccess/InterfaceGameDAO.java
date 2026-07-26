@@ -4,9 +4,9 @@ import model.GameData;
 import java.util.List;
 
 public interface InterfaceGameDAO{
-    public List<GameData> getGames();
-    public GameData getGamebyID(int gameID);
-    public void addGame(GameData gameData);
-    public void joinGame(int gameID, String username, String color);
-    public void deleteGameData();
+    public List<GameData> getGames() throws DataAccessException;
+    public GameData getGamebyID(int gameID) throws DataAccessException;
+    public void addGame(GameData gameData) throws DataAccessException;
+    public void joinGame(int gameID, String username, String color) throws DataAccessException;
+    public void deleteGameData() throws DataAccessException;
 }
