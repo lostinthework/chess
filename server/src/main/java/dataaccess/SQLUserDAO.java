@@ -1,7 +1,7 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 
@@ -14,7 +14,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  users (
+            CREATE TABLE IF NOT EXISTS users (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
@@ -40,8 +40,9 @@ public class SQLUserDAO implements InterfaceUserDAO {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
+            String hashedPassword = BCrypt.hashpw(userData.getPassword(), BCrypt.gensalt());
             ps.setString(1, userData.getUsername());
-            ps.setString(2, userData.getPassword());
+            ps.setString(2, hashedPassword);
             ps.setString(3, userData.getEmail());
             ps.executeUpdate();
         } catch (Exception e) {
@@ -50,21 +51,25 @@ public class SQLUserDAO implements InterfaceUserDAO {
 
     public UserData getUser(String username, String password) {
         String email = null;
-        var statement = "SELECT * FROM users WHERE username = ? and password = ?";
+        String hashedPassword = null;
+        var statement = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.setString(1, username);
-            ps.setString(2, password);
             var rs = ps.executeQuery();
             if (rs.next()) {
                 email = rs.getString("email");
+                hashedPassword = rs.getString("password");
             }
             else {
                 return null;
             }
         } catch (Exception e) {
         }
-        return new UserData(username, password, email);
+        if (BCrypt.checkpw(password, hashedPassword)) {
+            return new UserData(username, password, email);
+        }
+        return null;
     }
 
     public UserData checkUser(String username) {

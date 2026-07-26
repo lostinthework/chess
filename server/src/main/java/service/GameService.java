@@ -18,7 +18,7 @@ public class GameService extends AuthService {
     }
     public int createGame(String gameName) {
         int gameID = new Random().nextInt(Integer.MAX_VALUE) + 1;
-        gameDAO.addGame(new GameData(gameID, null, null, gameName));
+        gameDAO.addGame(new GameData(gameID, null, null, gameName, new ChessGame()));
         return gameID;
     }
     public void joinGame(int gameID, String username, String color) {

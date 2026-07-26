@@ -1,7 +1,8 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,11 +17,12 @@ public class SQLGameDAO implements InterfaceGameDAO {
 
     private final String[] createStatements = {
         """
-        CREATE TABLE IF NOT EXISTS  games (
+        CREATE TABLE IF NOT EXISTS games (
           `gameID` int NOT NULL,
           `whiteUsername` varchar(256) DEFAULT NULL,
           `blackUsername` varchar(256) DEFAULT NULL,
           `gameName` varchar(256) NOT NULL,
+          `game` LONGTEXT NOT NULL,
           PRIMARY KEY (`gameID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
         """
@@ -47,7 +49,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
             var rs = ps.executeQuery();
             while (true) {
                 if (rs.next()) {
-                    games.add(new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName")));
+                    games.add(new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"), new Gson().fromJson(rs.getString("game"), ChessGame.class)));
                 } else {
                     return games;
                 }
@@ -61,6 +63,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
         String whiteUsername = null;
         String blackUsername = null;
         String gameName = null;
+        String game = null;
         var statement = "SELECT * FROM games WHERE gameID = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
@@ -70,28 +73,28 @@ public class SQLGameDAO implements InterfaceGameDAO {
                 whiteUsername = rs.getString("whiteUsername");
                 blackUsername = rs.getString("blackUsername");
                 gameName = rs.getString("gameName");
+                game = rs.getString("game");
             }
             else {
                 return null;
             }
         } catch (Exception e) {
         }
-        return new GameData(gameID, whiteUsername, blackUsername, gameName);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
     }
 
     public void addGame(GameData gameData) {
-        var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName) VALUES (?, ?, ?, ?)";
-        System.out.println("here");
+        var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.setInt(1, gameData.getGameID());
             ps.setString(2, gameData.getWhiteUsername());
             ps.setString(3, gameData.getBlackUsername());
             ps.setString(4, gameData.getName());
-            System.out.println("here2");
+            ps.setString(5, new Gson().toJson(gameData.getGame()));
             int rows = ps.executeUpdate();
-            System.out.println(rows + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
