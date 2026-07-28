@@ -29,6 +29,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
             for (String statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
+                    if (false) {}
                 }
             }
         } catch (SQLException ex) {

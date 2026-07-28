@@ -37,7 +37,8 @@ public class SQLGameDAO implements InterfaceGameDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Error: Unable to configure database: %s", ex.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError,
+                                        String.format("Error: Unable to configure database: %s", ex.getMessage()));
         }
     }
 
@@ -49,7 +50,11 @@ public class SQLGameDAO implements InterfaceGameDAO {
             var rs = ps.executeQuery();
             while (true) {
                 if (rs.next()) {
-                    games.add(new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"), new Gson().fromJson(rs.getString("game"), ChessGame.class)));
+                    games.add(new GameData(rs.getInt("gameID"),
+                                           rs.getString("whiteUsername"),
+                                           rs.getString("blackUsername"),
+                                           rs.getString("gameName"),
+                                           new Gson().fromJson(rs.getString("game"), ChessGame.class)));
                 } else {
                     return games;
                 }
