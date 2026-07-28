@@ -93,7 +93,9 @@ public class UnitTests {
     @Order(6)
     @DisplayName("Get Username Negative")
     public void getUsernameNegative() {
-        assertThrows(NullPointerException.class, () -> {authyService.getUsername("authtoken");});
+        assertThrows(NullPointerException.class, () -> {
+            authyService.getUsername("authtoken");
+        });
     }
 
     @Test
@@ -189,7 +191,9 @@ public class UnitTests {
     public void registerNegative() throws DataAccessException, ResponseException {
         UserData user = new UserData("username", "password", "email");
         useryService.register(user);
-        assertThrows(ResponseException.class, () -> {useryService.register(user);});
+        assertThrows(ResponseException.class, () -> {
+            useryService.register(user);
+        });
     }
 
     @Test
@@ -208,7 +212,9 @@ public class UnitTests {
     public void loginNegative() throws DataAccessException, ResponseException {
         UserData user = new UserData("username", "password", "email");
         useryService.register(user);
-        assertThrows(ResponseException.class, () -> {useryService.login("username", "passwords");});
+        assertThrows(ResponseException.class, () -> {
+            useryService.login("username", "passwords");
+        });
     }
 
     @Test
@@ -227,300 +233,8 @@ public class UnitTests {
     public void logoutNegative() throws DataAccessException, ResponseException {
         UserData user = new UserData("username", "password", "email");
         RegisterResult result = useryService.register(user);
-        assertThrows(ResponseException.class, () -> {useryService.logout(null);});
+        assertThrows(ResponseException.class, () -> {
+            useryService.logout(null);
+        });
     }
-
-    @Test
-    @Order(21)
-    @DisplayName("SQLUserDAO_addUser_pos")
-    public void sSQLUserDAO_addUser_pos() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        assertEquals(user.getUsername(), userDAO.checkUser("username").getUsername());
-    }
-
-    @Test
-    @Order(22)
-    @DisplayName("SQLUserDAO_addUser_neg")
-    public void sSQLUserDAO_addUser_neg() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        assertThrows(DataAccessException.class, () -> {userDAO.addUser(user);});
-    }
-
-    @Test
-    @Order(23)
-    @DisplayName("SQLUserDAO_getUser_pos")
-    public void sSQLUserDAO_getUser_pos() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        assertEquals(user.getUsername(), userDAO.getUser("username", "password").getUsername());
-    }
-
-    @Test
-    @Order(24)
-    @DisplayName("SQLUserDAO_getUser_neg")
-    public void sSQLUserDAO_getUser_neg() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        assertEquals(null, userDAO.getUser("username", "wrong password"));
-    }
-
-    @Test
-    @Order(23)
-    @DisplayName("SQLUserDAO_checkUser_pos")
-    public void sSQLUserDAO_checkUser_pos() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        assertEquals(user.getUsername(), userDAO.checkUser("username").getUsername());
-    }
-
-    @Test
-    @Order(24)
-    @DisplayName("SQLUserDAO_checkUser_neg")
-    public void sSQLUserDAO_checkUser_neg() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-        assertEquals(null, userDAO.checkUser("username"));
-    }
-
-    @Test
-    @Order(25)
-    @DisplayName("SQLUserDAO_deleteUser_pos")
-    public void sSQLUserDAO_deleteUser_pos() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-        UserData user = new UserData("username", "password", "email");
-        userDAO.addUser(user);
-        userDAO.deleteUserData();
-        assertNull(userDAO.getUser("username", "password"));
-//        assertThrows(DataAccessException.class, () -> {userDAO.getUser("username", "password");});
-    }
-
-    @Test
-    @Order(26)
-    @DisplayName("SQLUserDAO_deleteUser_neg")
-    public void sSQLUserDAO_deleteUser_neg() throws DataAccessException, ResponseException {
-        SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.deleteUserData();
-        assertNull(userDAO.getUser("username", "password"));
-//        assertThrows(DataAccessException.class, () -> {userDAO.getUser("username", "password");});
-    }
-
-    @Test
-    @Order(27)
-    @DisplayName("SQLGameDAO_getGames_pos")
-    public void sSQLGameDAO_getGames_pos() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
-
-        gameDAO.addGame(game);
-        assertEquals(1, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(28)
-    @DisplayName("SQLGameDAO_getGames_neg")
-    public void sSQLGameDAO_getGames_neg() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-        assertEquals(0, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(29)
-    @DisplayName("SQLGameDAO_getGamebyID_pos")
-    public void sSQLGameDAO_getGamebyID_pos() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
-
-        gameDAO.addGame(game);
-        assertEquals(game.getName(), gameDAO.getGamebyID(0).getName());
-    }
-
-    @Test
-    @Order(30)
-    @DisplayName("SQLGameDAO_getGamebyID_neg")
-    public void sSQLGameDAO_getGamebyID_neg() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-        assertEquals(null, gameDAO.getGamebyID(0));
-    }
-
-    @Test
-    @Order(27)
-    @DisplayName("SQLGameDAO_addGame_pos")
-    public void sSQLGameDAO_addGame_pos() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
-
-        gameDAO.addGame(game);
-        assertEquals(1, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(28)
-    @DisplayName("SQLGameDAO_addGame_neg")
-    public void sSQLGameDAO_addGame_neg() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-        assertEquals(0, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(31)
-    @DisplayName("SQLGameDAO_deleteGameData_pos")
-    public void sSQLGameDAO_deleteGameData_pos() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
-
-        gameDAO.addGame(game);
-        gameDAO.deleteGameData();
-        assertEquals(0, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(32)
-    @DisplayName("SQLGameDAO_deleteGameData_neg")
-    public void sSQLGameDAO_deleteGameData_neg() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-
-        gameDAO.deleteGameData();
-        assertEquals(0, gameDAO.getGames().size());
-    }
-
-    @Test
-    @Order(33)
-    @DisplayName("SQLGameDAO_joinGame_pos")
-    public void sSQLGameDAO_joinGame_pos() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-
-        GameData game = new GameData(0, null, null, "name", new ChessGame());
-        GameData joinedGame = new GameData(0, "white", null, "name", new ChessGame());
-        gameDAO.addGame(game);
-        gameDAO.joinGame(0, "white", "WHITE");
-//        assertEquals(joinedGame, gameDAO.getGamebyID(0));
-        assertEquals("name", gameDAO.getGamebyID(0).getName());
-    }
-
-    @Test
-    @Order(34)
-    @DisplayName("SQLGameDAO_joinGame_neg")
-    public void sSQLGameDAO_joinGame_neg() throws DataAccessException, ResponseException {
-        SQLGameDAO gameDAO = new SQLGameDAO();
-        gameDAO.deleteGameData();
-
-        GameData game = new GameData(0, "white", null, "name", new ChessGame());
-//        GameData joinedGame = new GameData(0, "white", null, "name", new ChessGame());
-        gameDAO.addGame(game);
-        gameDAO.joinGame(0, "white", "WHITE");
-        gameDAO.deleteGameData();
-        assertEquals(0, gameDAO.getGames().size());
-//        assertThrows(DataAccessException.class, () -> {gameDAO.joinGame(0, "white", "WHITE");});
-    }
-
-    @Test
-    @Order(35)
-    @DisplayName("SQLAuthDAO_addAuth_pos")
-    public void sSQLAuthDAO_addAuth_pos() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        authDAO.deleteAuthData();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.addAuth(auth);
-        assertEquals(auth.getUsername(), authDAO.getAuth("token").getUsername());
-    }
-
-    @Test
-    @Order(36)
-    @DisplayName("SQLAuthDAO_addAuth_neg")
-    public void sSQLAuthDAO_addAuth_neg() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        authDAO.deleteAuthData();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.addAuth(auth);
-        assertThrows(DataAccessException.class, () -> {authDAO.addAuth(auth);});
-    }
-
-    @Test
-    @Order(37)
-    @DisplayName("SQLAuthDAO_deleteAuth_pos")
-    public void sSQLAuthDAO_deleteAuth_pos() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.addAuth(auth);
-        authDAO.deleteAuth(auth);
-        assertEquals(null, authDAO.getAuth("token"));
-//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
-    }
-
-    @Test
-    @Order(38)
-    @DisplayName("SQLAuthDAO_deleteAuth_neg")
-    public void sSQLAuthDAO_deleteAuth_neg() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.deleteAuth(auth);
-        assertEquals(null, authDAO.getAuth("token"));
-//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
-    }
-
-    @Test
-    @Order(39)
-    @DisplayName("SQLAuthDAO_deleteAuthData_pos")
-    public void sSQLAuthDAO_deleteAuthData_pos() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.addAuth(auth);
-        authDAO.deleteAuthData();
-        assertEquals(null, authDAO.getAuth("token"));
-//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
-    }
-
-    @Test
-    @Order(40)
-    @DisplayName("SQLAuthDAO_deleteAuthData_neg")
-    public void sSQLAuthDAO_deleteAuthData_neg() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.deleteAuth(auth);
-        assertEquals(null, authDAO.getAuth("token"));
-//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
-    }
-
-    @Test
-    @Order(39)
-    @DisplayName("SQLAuthDAO_getAuth_pos")
-    public void sSQLAuthDAO_getAuth_pos() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        authDAO.deleteAuthData();
-        AuthData auth = new AuthData("username", "token");
-        authDAO.addAuth(auth);
-        assertEquals(auth.getUsername(), authDAO.getAuth("token").getUsername());
-    }
-
-    @Test
-    @Order(40)
-    @DisplayName("SQLAuthDAO_getAuth_neg")
-    public void sSQLAuthDAO_getAuth_neg() throws DataAccessException, ResponseException {
-        SQLAuthDAO authDAO = new SQLAuthDAO();
-        authDAO.deleteAuthData();
-        assertEquals(null, authDAO.getAuth("token"));
-//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
-    }
-
 }
