@@ -33,7 +33,8 @@ public class SQLUserDAO implements InterfaceUserDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Error: Unable to configure database: %s", ex.getMessage()));
+            throw new ResponseException(ResponseException.Code.ServerError,
+                                        String.format("Error: Unable to configure database: %s", ex.getMessage()));
         }
     }
 

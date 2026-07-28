@@ -230,5 +230,215 @@ public class UnitTests {
         assertThrows(ResponseException.class, () -> {useryService.logout(null);});
     }
 
+    @Test
+    @Order(21)
+    @DisplayName("SQLUserDAO_addUser_pos")
+    public void SQLUserDAO_addUser_pos() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+
+        UserData user = new UserData("username", "password", "email");
+        userDAO.addUser(user);
+        assertEquals(user, userDAO.checkUser("username"));
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("SQLUserDAO_addUser_neg")
+    public void SQLUserDAO_addUser_neg() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+
+        UserData user = new UserData("username", "password", "email");
+        userDAO.addUser(user);
+        assertThrows(DataAccessException.class, () -> {userDAO.addUser(user);});
+    }
+
+    @Test
+    @Order(23)
+    @DisplayName("SQLUserDAO_getUser_pos")
+    public void SQLUserDAO_getUser_pos() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+
+        UserData user = new UserData("username", "password", "email");
+        userDAO.addUser(user);
+        assertEquals(user, userDAO.getUser("username", "password"));
+    }
+
+    @Test
+    @Order(24)
+    @DisplayName("SQLUserDAO_getUser_neg")
+    public void SQLUserDAO_getUser_neg() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+
+        UserData user = new UserData("username", "password", "email");
+        userDAO.addUser(user);
+        assertThrows(ResponseException.class, () -> {userDAO.getUser("username", "wrong password");});
+    }
+
+    @Test
+    @Order(25)
+    @DisplayName("SQLUserDAO_deleteUser_pos")
+    public void SQLUserDAO_deleteUser_pos() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+
+        UserData user = new UserData("username", "password", "email");
+        userDAO.addUser(user);
+        userDAO.deleteUserData();
+        assertThrows(ResponseException.class, () -> {userDAO.getUser("username", "password");});
+    }
+
+    @Test
+    @Order(26)
+    @DisplayName("SQLUserDAO_deleteUser_neg")
+    public void SQLUserDAO_deleteUser_neg() throws DataAccessException, ResponseException {
+        SQLUserDAO userDAO = new SQLUserDAO();
+        userDAO.deleteUserData();
+        assertThrows(ResponseException.class, () -> {userDAO.getUser("username", "password");});
+    }
+
+    @Test
+    @Order(27)
+    @DisplayName("SQLGameDAO_getGames_pos")
+    public void SQLGameDAO_getGames_pos() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
+
+        gameDAO.addGame(game);
+        assertEquals(1, gameDAO.getGames().size());
+    }
+
+    @Test
+    @Order(28)
+    @DisplayName("SQLGameDAO_getGames_neg")
+    public void SQLGameDAO_getGames_neg() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        assertEquals(0, gameDAO.getGames().size());
+    }
+
+    @Test
+    @Order(29)
+    @DisplayName("SQLGameDAO_getGamebyID_pos")
+    public void SQLGameDAO_getGamebyID_pos() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
+
+        gameDAO.addGame(game);
+        assertEquals(game, gameDAO.getGamebyID(0));
+    }
+
+    @Test
+    @Order(30)
+    @DisplayName("SQLGameDAO_getGamebyID_neg")
+    public void SQLGameDAO_getGamebyID_neg() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        assertThrows(ResponseException.class, () -> {gameDAO.getGamebyID(0);});
+    }
+
+    @Test
+    @Order(31)
+    @DisplayName("SQLGameDAO_deleteGameData_pos")
+    public void SQLGameDAO_deleteGameData_pos() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData game = new GameData(0, "white", "black", "name", new ChessGame());
+
+        gameDAO.addGame(game);
+        gameDAO.deleteGameData();
+        assertEquals(0, gameDAO.getGames().size());
+    }
+
+    @Test
+    @Order(32)
+    @DisplayName("SQLGameDAO_deleteGameData_neg")
+    public void SQLGameDAO_deleteGameData_neg() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+
+        gameDAO.deleteGameData();
+        assertEquals(0, gameDAO.getGames().size());
+    }
+
+    @Test
+    @Order(33)
+    @DisplayName("SQLGameDAO_joinGame_pos")
+    public void SQLGameDAO_joinGame_pos() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData game = new GameData(0, null, null, "name", new ChessGame());
+        GameData joinedGame = new GameData(0, "white", null, "name", new ChessGame());
+        gameDAO.addGame(game);
+        gameDAO.joinGame(0, "white", "WHITE");
+        assertEquals(joinedGame, gameDAO.getGamebyID(0));
+    }
+
+    @Test
+    @Order(34)
+    @DisplayName("SQLGameDAO_joinGame_neg")
+    public void SQLGameDAO_joinGame_neg() throws DataAccessException, ResponseException {
+        SQLGameDAO gameDAO = new SQLGameDAO();
+        GameData game = new GameData(0, null, null, "name", new ChessGame());
+        GameData joinedGame = new GameData(0, "white", null, "name", new ChessGame());
+        gameDAO.addGame(game);
+        assertThrows(ResponseException.class, () -> {gameDAO.joinGame(0, "white", "None");});
+    }
+
+    @Test
+    @Order(35)
+    @DisplayName("SQLAuthDAO_addAuth_pos")
+    public void SQLAuthDAO_addAuth_pos() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.addAuth(auth);
+        assertEquals(auth, authDAO.getAuth("token"));
+    }
+
+    @Test
+    @Order(36)
+    @DisplayName("SQLAuthDAO_addAuth_neg")
+    public void SQLAuthDAO_addAuth_neg() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.addAuth(auth);
+        assertThrows(DataAccessException.class, () -> {authDAO.addAuth(auth);});
+    }
+
+    @Test
+    @Order(37)
+    @DisplayName("SQLAuthDAO_deleteAuth_pos")
+    public void SQLAuthDAO_deleteAuth_pos() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.addAuth(auth);
+        authDAO.deleteAuth(auth);
+        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+    }
+
+    @Test
+    @Order(38)
+    @DisplayName("SQLAuthDAO_deleteAuth_neg")
+    public void SQLAuthDAO_deleteAuth_neg() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.deleteAuth(auth);
+        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+    }
+
+    @Test
+    @Order(39)
+    @DisplayName("SQLAuthDAO_deleteAuthData_pos")
+    public void SQLAuthDAO_deleteAuthData_pos() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.addAuth(auth);
+        authDAO.deleteAuthData();
+        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+    }
+
+    @Test
+    @Order(40)
+    @DisplayName("SQLAuthDAO_deleteAuthData_neg")
+    public void SQLAuthDAO_deleteAuthData_neg() throws DataAccessException, ResponseException {
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        AuthData auth = new AuthData("username", "token");
+        authDAO.deleteAuth(auth);
+        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+    }
+
 
 }
