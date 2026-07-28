@@ -41,7 +41,7 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
             ps.setString(1, authData.getauthToken());
             ps.setString(2, authData.getUsername());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to add AuthData", e);
         }
     }
@@ -52,7 +52,7 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.setString(1, authData.getauthToken());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to delete AuthData", e);
         }
     }
@@ -62,7 +62,7 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to delete AuthData", e);
         }
     }
@@ -80,7 +80,7 @@ public class SQLAuthDAO implements InterfaceAuthDAO {
             else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to get AuthData", e);
 //            return null;
         }

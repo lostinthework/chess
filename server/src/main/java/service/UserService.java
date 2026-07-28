@@ -14,11 +14,11 @@ public class UserService extends AuthService {
         super(userDAO, authDAO, gameDAO);
     }
 
-    public RegisterResult register(UserData userData) throws DataAccessException {
+    public RegisterResult register(UserData userData) throws DataAccessException, ResponseException {
         var user = userDAO.checkUser(userData.getUsername());
         // Check if the requested username has already been taken
         if (user != null) {
-            throw new DataAccessException("Error: already taken");
+            throw new ResponseException(ResponseException.Code.Forbidden, "Error: already taken");
         }
         // add the username to the database
         userDAO.addUser(userData);
@@ -29,11 +29,11 @@ public class UserService extends AuthService {
         return new RegisterResult(userData.getUsername(), authToken);
     }
 
-    public LoginResult login(String username, String password) throws DataAccessException {
+    public LoginResult login(String username, String password) throws DataAccessException, ResponseException {
         // check if the username was correct
         var user = userDAO.getUser(username, password);
         if (user == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new ResponseException(ResponseException.Code.Unauthorized, "Error: unauthorized");
         }
         // create an authToken and return it with the username
         String authToken = UUID.randomUUID().toString();
@@ -41,11 +41,11 @@ public class UserService extends AuthService {
         return new LoginResult(username, authToken);
     }
 
-    public void logout(String authToken) throws DataAccessException {
+    public void logout(String authToken) throws DataAccessException, ResponseException {
         // Check authToken
         AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new ResponseException(ResponseException.Code.Unauthorized, "Error: unauthorized");
         }
         else {
             deleteAuth(authData);

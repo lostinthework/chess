@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import service.GameService;
 import io.javalin.http.Context;
 import java.util.Map;
@@ -13,21 +14,14 @@ public class List {
         this.gamesService = gamesService;
     }
 
-    public void handle(Context ctx) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException, ResponseException {
         var gson = new Gson();
         ctx.contentType("application/json");
 
         String authToken;
         authToken = ctx.header("Authorization");
-        try {
-            if (gamesService.getAuth(authToken) == null) {
-                throw new DataAccessException("Error: unauthorized");
-            }
-        }
-        catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
-            return;
+        if (gamesService.getAuth(authToken) == null) {
+            throw new ResponseException(ResponseException.Code.Unauthorized, "Error: unauthorized");
         }
 
         // get all games

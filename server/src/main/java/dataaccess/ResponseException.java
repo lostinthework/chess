@@ -3,7 +3,9 @@ package dataaccess;
 public class ResponseException extends Exception {
     public enum Code {
         ServerError,
-        ClientError,
+        BadRequest,
+        Unauthorized,
+        Forbidden
     }
 
     public final Code code;

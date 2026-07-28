@@ -45,7 +45,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
             ps.setString(2, hashedPassword);
             ps.setString(3, userData.getEmail());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to add User", e);
         }
     }
@@ -65,7 +65,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
             else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to get User", e);
         }
         if (BCrypt.checkpw(password, hashedPassword)) {
@@ -89,7 +89,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
             else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to check user", e);
         }
         return new UserData(username, password, email);
@@ -100,7 +100,7 @@ public class SQLUserDAO implements InterfaceUserDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Delete user data", e);
         }
     }

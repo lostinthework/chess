@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import service.UserService;
 import io.javalin.http.Context;
 
@@ -12,21 +13,14 @@ public class Logout {
         this.useryService = useryService;
     }
 
-    public void handle(Context ctx) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException, ResponseException {
         var gson = new Gson();
         ctx.contentType("application/json");
 
         // Verify authentication
         String authToken = ctx.header("Authorization");
-        try {
-            // Logout
-            useryService.logout(authToken);
-        }
-        catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
-            return;
-        }
+        // Logout
+        useryService.logout(authToken);
         ctx.result("{}");
     }
 }

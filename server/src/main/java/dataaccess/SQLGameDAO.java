@@ -54,7 +54,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
                     return games;
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to get game", e);
 //            return null;
         }
@@ -79,7 +79,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
             else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to get game", e);
         }
         return new GameData(gameID, whiteUsername, blackUsername, gameName, new Gson().fromJson(game, ChessGame.class));
@@ -94,8 +94,8 @@ public class SQLGameDAO implements InterfaceGameDAO {
             ps.setString(3, gameData.getBlackUsername());
             ps.setString(4, gameData.getName());
             ps.setString(5, new Gson().toJson(gameData.getGame()));
-            int rows = ps.executeUpdate();
-        } catch (Exception e) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
@@ -105,13 +105,12 @@ public class SQLGameDAO implements InterfaceGameDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to delete data", e);
         }
     }
 
     public void joinGame(int gameID, String username, String color) throws DataAccessException {
-        System.out.println("Debugging!");
         String statement;
         if (color.equals("WHITE")) {
             statement = "UPDATE games SET whiteUsername = ? WHERE gameID = ?; ";
@@ -123,9 +122,8 @@ public class SQLGameDAO implements InterfaceGameDAO {
              PreparedStatement ps = conn.prepareStatement(statement);) {
             ps.setString(1, username);
             ps.setInt(2, gameID);
-            int rows = ps.executeUpdate();
-            System.out.println(rows);
-        } catch (Exception e) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to join game", e);
         }
     }

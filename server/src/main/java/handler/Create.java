@@ -3,7 +3,9 @@ package handler;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import model.GameData;
+import org.eclipse.jetty.server.Response;
 import service.GameService;
 import io.javalin.http.Context;
 
@@ -16,22 +18,15 @@ public class Create {
         this.gamesService = gamesService;
     }
 
-    public void handle(Context ctx) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException, ResponseException {
         var gson = new Gson();
         ctx.contentType("application/json");
         String authToken;
         authToken = ctx.header("Authorization");
 
         // Verify authentication
-        try {
-            if (gamesService.getAuth(authToken) == null) {
-                throw new DataAccessException("Error: unauthorized");
-            }
-        }
-        catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new ErrorHandler("Error: unauthorized")));
-            return;
+        if (gamesService.getAuth(authToken) == null) {
+            throw new ResponseException(ResponseException.Code.Unauthorized, "Error: unauthorized");
         }
 
         // Check for valid input
@@ -39,13 +34,11 @@ public class Create {
         try {
             game = gson.fromJson(ctx.body(), GameData.class);
             if (game.getName() == null) {
-                throw new DataAccessException("Error: bad request");
+                throw new ResponseException(ResponseException.Code.BadRequest, "Error: bad request");
             }
         }
-        catch (DataAccessException | JsonSyntaxException e) {
-            ctx.status(400);
-            ctx.result(gson.toJson(new ErrorHandler("Error: bad request")));
-            return;
+        catch (NullPointerException | JsonSyntaxException e) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "Error: bad request");
         }
 
         // Create game

@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import handler.ErrorHandler;
 import service.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -55,13 +56,15 @@ public class Server {
 
         app.exception(ResponseException.class, (e, ctx) -> {
             int status = switch (e.code) {
+                case BadRequest -> 400;
+                case Unauthorized -> 401;
+                case Forbidden -> 403;
                 case ServerError -> 500;
-                case ClientError -> 400;
             };
 
             ctx.status(status);
             ctx.contentType("application/json");
-            ctx.result(new Gson().toJson(new handler.ErrorHandler(e.getMessage())));
+            ctx.result(new Gson().toJson(new ErrorHandler(e.getMessage())));
         });
 
         app.exception(DataAccessException.class, (e, ctx) -> {

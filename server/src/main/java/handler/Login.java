@@ -3,7 +3,9 @@ package handler;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import model.UserData;
+import org.eclipse.jetty.server.Response;
 import service.UserService;
 import io.javalin.http.Context;
 
@@ -14,7 +16,7 @@ public class Login {
         this.useryService = useryService;
     }
 
-    public void handle(Context ctx) throws DataAccessException {
+    public void handle(Context ctx) throws DataAccessException, ResponseException {
         var gson = new Gson();
         ctx.contentType("application/json");
 
@@ -23,23 +25,15 @@ public class Login {
         try {
             user = gson.fromJson(ctx.body(), UserData.class);
             if (user.getUsername() == null || user.getPassword() == null) {
-                throw new DataAccessException("Error: bad request");
+                throw new ResponseException(ResponseException.Code.BadRequest, "Error: bad request");
             }
         }
-        catch (DataAccessException | JsonSyntaxException e) {
-            ctx.status(400);
-            ctx.result(gson.toJson(new ErrorHandler("Error: bad request")));
-            return;
+        catch (NullPointerException | JsonSyntaxException e) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "Error: bad request");
         }
 
         // Login
-        try {
-            var loginResult = useryService.login(user.getUsername(), user.getPassword());
-            ctx.result(gson.toJson(loginResult));
-        }
-        catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new ErrorHandler(e.getMessage())));
-        }
+        var loginResult = useryService.login(user.getUsername(), user.getPassword());
+        ctx.result(gson.toJson(loginResult));
     }
 }
