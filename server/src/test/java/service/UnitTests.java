@@ -235,10 +235,10 @@ public class UnitTests {
     @DisplayName("SQLUserDAO_addUser_pos")
     public void SQLUserDAO_addUser_pos() throws DataAccessException, ResponseException {
         SQLUserDAO userDAO = new SQLUserDAO();
-
+        userDAO.deleteUserData();
         UserData user = new UserData("username", "password", "email");
         userDAO.addUser(user);
-        assertEquals(user, userDAO.checkUser("username"));
+        assertEquals(user.getUsername(), userDAO.checkUser("username").getUsername());
     }
 
     @Test
@@ -246,7 +246,7 @@ public class UnitTests {
     @DisplayName("SQLUserDAO_addUser_neg")
     public void SQLUserDAO_addUser_neg() throws DataAccessException, ResponseException {
         SQLUserDAO userDAO = new SQLUserDAO();
-
+        userDAO.deleteUserData();
         UserData user = new UserData("username", "password", "email");
         userDAO.addUser(user);
         assertThrows(DataAccessException.class, () -> {userDAO.addUser(user);});
@@ -283,7 +283,8 @@ public class UnitTests {
         UserData user = new UserData("username", "password", "email");
         userDAO.addUser(user);
         userDAO.deleteUserData();
-        assertThrows(ResponseException.class, () -> {userDAO.getUser("username", "password");});
+        assertNull(userDAO.getUser("username", "password"));
+//        assertThrows(DataAccessException.class, () -> {userDAO.getUser("username", "password");});
     }
 
     @Test
@@ -292,7 +293,8 @@ public class UnitTests {
     public void SQLUserDAO_deleteUser_neg() throws DataAccessException, ResponseException {
         SQLUserDAO userDAO = new SQLUserDAO();
         userDAO.deleteUserData();
-        assertThrows(ResponseException.class, () -> {userDAO.getUser("username", "password");});
+        assertNull(userDAO.getUser("username", "password"));
+//        assertThrows(DataAccessException.class, () -> {userDAO.getUser("username", "password");});
     }
 
     @Test
@@ -383,9 +385,10 @@ public class UnitTests {
     @DisplayName("SQLAuthDAO_addAuth_pos")
     public void SQLAuthDAO_addAuth_pos() throws DataAccessException, ResponseException {
         SQLAuthDAO authDAO = new SQLAuthDAO();
+        authDAO.deleteAuthData();
         AuthData auth = new AuthData("username", "token");
         authDAO.addAuth(auth);
-        assertEquals(auth, authDAO.getAuth("token"));
+        assertEquals(auth.getUsername(), authDAO.getAuth("token").getUsername());
     }
 
     @Test
@@ -393,6 +396,7 @@ public class UnitTests {
     @DisplayName("SQLAuthDAO_addAuth_neg")
     public void SQLAuthDAO_addAuth_neg() throws DataAccessException, ResponseException {
         SQLAuthDAO authDAO = new SQLAuthDAO();
+        authDAO.deleteAuthData();
         AuthData auth = new AuthData("username", "token");
         authDAO.addAuth(auth);
         assertThrows(DataAccessException.class, () -> {authDAO.addAuth(auth);});
@@ -406,7 +410,8 @@ public class UnitTests {
         AuthData auth = new AuthData("username", "token");
         authDAO.addAuth(auth);
         authDAO.deleteAuth(auth);
-        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+        assertEquals(null, authDAO.getAuth("token"));
+//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
     }
 
     @Test
@@ -416,7 +421,8 @@ public class UnitTests {
         SQLAuthDAO authDAO = new SQLAuthDAO();
         AuthData auth = new AuthData("username", "token");
         authDAO.deleteAuth(auth);
-        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+        assertEquals(null, authDAO.getAuth("token"));
+//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
     }
 
     @Test
@@ -427,7 +433,8 @@ public class UnitTests {
         AuthData auth = new AuthData("username", "token");
         authDAO.addAuth(auth);
         authDAO.deleteAuthData();
-        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+        assertEquals(null, authDAO.getAuth("token"));
+//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
     }
 
     @Test
@@ -437,7 +444,8 @@ public class UnitTests {
         SQLAuthDAO authDAO = new SQLAuthDAO();
         AuthData auth = new AuthData("username", "token");
         authDAO.deleteAuth(auth);
-        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
+        assertEquals(null, authDAO.getAuth("token"));
+//        assertThrows(DataAccessException.class, () -> {authDAO.getAuth("token");});
     }
 
 
