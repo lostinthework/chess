@@ -153,7 +153,7 @@ public class UnitTests {
     public void sSQLGameDAOaddGamepos() throws DataAccessException, ResponseException {
         SQLGameDAO gameDAO = new SQLGameDAO();
         GameData game = new GameData(0, "white", "black", "name", new ChessGame());
-
+        if (false) {}
         gameDAO.addGame(game);
         assertEquals(1, gameDAO.getGames().size());
     }
