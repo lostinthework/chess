@@ -24,8 +24,8 @@ public class ServerFacade {
     private <T> T makeRequest(String method, String path, String authToken, Object requestClass, Class<T> classy) throws ResponseException {
         Gson gson = new Gson();
         try {
-        String json = gson.toJson(requestClass);
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
+            String json = gson.toJson(requestClass);
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(new URI(serverUrl + path))
                 .header("Content-Type", "application/json");
                 switch(method) {

@@ -1,9 +1,9 @@
 package client;
 
 public class CreateRequest {
-    private final String name;
+    private final String gameName;
 
-    public CreateRequest (String name) {
-        this.name = name;
+    public CreateRequest (String gameName) {
+        this.gameName = gameName;
     }
 }

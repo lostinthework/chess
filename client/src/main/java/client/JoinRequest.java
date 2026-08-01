@@ -2,10 +2,10 @@ package client;
 
 public class JoinRequest {
     private final int gameID;
-    private final String color;
+    private final String playerColor;
 
-    public JoinRequest (int gameID, String color) {
+    public JoinRequest (int gameID, String playerColor) {
         this.gameID = gameID;
-        this.color = color;
+        this.playerColor = playerColor;
     }
 }
