@@ -60,7 +60,6 @@ public class Server {
                 case Unauthorized -> 401;
                 case Forbidden -> 403;
                 case ServerError -> 500;
-                case ClientError ->
             };
 
             ctx.status(status);

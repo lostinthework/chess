@@ -4,7 +4,7 @@ import client.ServerFacade;
 
 public class Main {
     public static void main(String[] args) {
-        ServerFacade server = new ServerFacade();
+        ServerFacade server = new ServerFacade("http://localhost:8080");
         Client client = new Client(server);
         try {
             client.run();
