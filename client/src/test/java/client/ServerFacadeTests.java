@@ -135,24 +135,24 @@ public class ServerFacadeTests {
 
     @Test
     public void joinPos() throws ResponseException {
-        String username = "username11";
+        String username = "username15";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
         int gameID = facade.createGame(auth.getauthToken(), "game");
         facade.listGames(auth.getauthToken());
-        Assertions.assertDoesNotThrow(() -> facade.joinGame(auth.getauthToken(), gameID, "white"));
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(auth.getauthToken(), gameID, "WHITE"));
     }
 
     @Test
     public void joinNeg() throws ResponseException {
-        String username = "username12";
+        String username = "username16";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
         int gameID = facade.createGame(auth.getauthToken(), "game");
-        facade.joinGame(auth.getauthToken(), gameID, "white");
-        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(auth.getauthToken(), gameID, "white"));
+        facade.joinGame(auth.getauthToken(), gameID, "WHITE");
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(auth.getauthToken(), gameID, "WHITE"));
     }
 
 }
