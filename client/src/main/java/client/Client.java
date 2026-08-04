@@ -5,14 +5,13 @@ import dataaccess.ResponseException;
 import model.AuthData;
 import model.GameData;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.awt.Color.BLUE;
 
 public class Client {
     private final ServerFacade server;
+    private final Map<Integer, Integer> gameNumberToID = new HashMap<>();
     private String authToken;
 //    private String cyan = "\u001b[36;1m";
 
@@ -49,8 +48,7 @@ public class Client {
                 case "list" -> listGames();
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
-                case "play" -> play();
-                case "observe" -> observe();
+                case "observe" -> observe(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -98,10 +96,14 @@ public class Client {
 
     public String listGames() throws ResponseException {
         if (authToken != null) {
+            gameNumberToID.clear();
             List<GameData> games = server.listGames(authToken);
             var result = new StringBuilder();
             result.append("Games:\n");
+            int gameNumber = 0;
             for (GameData game : games) {
+                gameNumber++;
+                gameNumberToID.put(gameNumber, game.getGameID());
                 String whitename = "";
                 String blackname = "";
                 if (game.getWhiteUsername() != null) {
@@ -111,10 +113,12 @@ public class Client {
                     blackname = game.getBlackUsername();
                 }
                 String prettyprint = String.format("---------------------\n" +
+                                                   ">>> Game %d <<<\n" +
                                                    "Name:          %s\n" +
                                                    "Game ID:       %d\n" +
                                                    "White player:  %s\n" +
                                                    "Black player:  %s\n\n",
+                                                   gameNumber,
                                                    game.getName(),
                                                    game.getGameID(),
                                                    whitename,
@@ -137,15 +141,49 @@ public class Client {
         throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
+    private String drawBoard(String color) {
+        if (color.equals("white")) {
+            return """
+                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                \u001b[97;47;1m 1  ♜ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟  8 \u001b[0m
+                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
+                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
+                \u001b[97;47;1m 1  ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♖  8 \u001b[0m
+                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                """;
+        }
+        else {
+            return """
+                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♖ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
+                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                """;
+        }
+    }
+
     public String joinGame(String... params) throws ResponseException {
         if (authToken != null) {
             if (params.length == 2) {
-                int gameID;
+                Integer gameID;
                 try {
-                    gameID = Integer.parseInt(params[0]);
+                    gameID = gameNumberToID.get(Integer.parseInt(params[0]));
                 }
                 catch (NumberFormatException e) {
-                    throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game ID.");
+                    throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
+                }
+                if (gameID == null) {
+                    throw new ResponseException(ResponseException.Code.BadRequest, "You must list games before joining one.");
                 }
                 if (!params[1].equals("white") && !params[1].equals("black")) {
                     throw new ResponseException(ResponseException.Code.BadRequest, "Invalid color.");
@@ -158,23 +196,27 @@ public class Client {
                             throw new ResponseException(ResponseException.Code.BadRequest, "Color already taken.");
                         }
                         server.joinGame(authToken, gameID, params[1].toUpperCase());
-                        return String.format("Joined game %s as %s.\n", game.getName(), params[1]);
+                        return drawBoard(params[1]);
                     }
                 }
-                throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game ID.");
+                throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
             }
-            throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game ID> <white|black>");
+            throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game> <white|black>");
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
-    public String play() throws ResponseException {
 
+    public String observe(String... params) throws ResponseException {
+        if (authToken != null) {
+            if (params.length == 1) {
+                return drawBoard("white");
+            }
+            throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game>");
+        }
+        throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
-    public String observe() throws ResponseException {
-
-    }
 
     public String help() {
         if (authToken == null) {
@@ -188,7 +230,8 @@ public class Client {
                 - logout
                 - list
                 - create <name>
-                - join <game ID> <white|black>
+                - join <game> <white|black>
+                - observe <game>
                 - quit
                 """;
     }
