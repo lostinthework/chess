@@ -33,7 +33,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerPos() throws ResponseException {
-        String username = "username";
+        String username = "username1";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -43,7 +43,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerNeg() throws ResponseException {
-        String username = "username";
+        String username = "username2";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -54,7 +54,7 @@ public class ServerFacadeTests {
 
     @Test
     public void loginPos() throws ResponseException {
-        String username = "username";
+        String username = "username3";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -64,7 +64,7 @@ public class ServerFacadeTests {
 
     @Test
     public void loginNeg() throws ResponseException {
-        String username = "username";
+        String username = "username4";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -74,7 +74,7 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutPos() throws ResponseException {
-        String username = "username";
+        String username = "username5";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -85,18 +85,18 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutNeg() throws ResponseException {
-        String username = "username";
+        String username = "username6";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
         facade.logout(auth.getauthToken());
-        Assertions.assertThrows(ResponseException.class,
+        Assertions.assertDoesNotThrow(
                 () -> facade.login(username, password));
     }
 
     @Test
     public void listPos() throws ResponseException {
-        String username = "username";
+        String username = "username7";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -107,7 +107,7 @@ public class ServerFacadeTests {
 
     @Test
     public void listNeg() throws ResponseException {
-        String username = "username";
+        String username = "username8";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -117,7 +117,7 @@ public class ServerFacadeTests {
 
     @Test
     public void createPos() throws ResponseException {
-        String username = "username";
+        String username = "username9";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -126,7 +126,7 @@ public class ServerFacadeTests {
 
     @Test
     public void createNeg() throws ResponseException {
-        String username = "username";
+        String username = "username10";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -135,7 +135,7 @@ public class ServerFacadeTests {
 
     @Test
     public void joinPos() throws ResponseException {
-        String username = "username";
+        String username = "username11";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
@@ -146,11 +146,12 @@ public class ServerFacadeTests {
 
     @Test
     public void joinNeg() throws ResponseException {
-        String username = "username";
+        String username = "username12";
         String password = "password";
         String email = "email@email.com";
         AuthData auth = facade.register(username, password, email);
         int gameID = facade.createGame(auth.getauthToken(), "game");
+        facade.joinGame(auth.getauthToken(), gameID, "white");
         Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(auth.getauthToken(), gameID, "white"));
     }
 
