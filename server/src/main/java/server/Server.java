@@ -3,11 +3,9 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import handler.ErrorHandler;
+import model.ResponseException;
 import service.*;
 import io.javalin.Javalin;
-import io.javalin.http.Context;
-
-import java.util.Map;
 
 public class Server {
     private Javalin app;

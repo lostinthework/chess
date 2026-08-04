@@ -5,6 +5,7 @@ import dataaccess.*;
 import handler.LoginResult;
 import handler.RegisterResult;
 import model.AuthData;
+import model.ResponseException;
 import model.UserData;
 import java.util.UUID;
 

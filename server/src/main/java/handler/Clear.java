@@ -1,6 +1,6 @@
 package handler;
 import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import service.GameService;
 import service.UserService;
 import io.javalin.http.Context;

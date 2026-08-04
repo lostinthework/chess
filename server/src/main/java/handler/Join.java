@@ -1,9 +1,8 @@
 package handler;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import model.GameData;
 import service.GameService;
 import io.javalin.http.Context;

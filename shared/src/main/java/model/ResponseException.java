@@ -1,4 +1,4 @@
-package dataaccess;
+package model;
 
 public class ResponseException extends Exception {
     public enum Code {

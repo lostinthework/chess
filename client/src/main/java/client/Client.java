@@ -1,13 +1,10 @@
 package client;
 
-import com.google.gson.Gson;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import model.AuthData;
 import model.GameData;
 
 import java.util.*;
-
-import static java.awt.Color.BLUE;
 
 public class Client {
     private final ServerFacade server;

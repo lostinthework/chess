@@ -6,6 +6,7 @@ import handler.LoginResult;
 import handler.RegisterResult;
 import model.AuthData;
 import model.GameData;
+import model.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

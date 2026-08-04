@@ -2,7 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
+import model.ResponseException;
 import service.GameService;
 import io.javalin.http.Context;
 import java.util.Map;

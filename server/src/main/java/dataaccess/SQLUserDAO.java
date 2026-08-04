@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.ResponseException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 

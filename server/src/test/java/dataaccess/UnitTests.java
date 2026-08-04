@@ -3,12 +3,12 @@ package dataaccess;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
+import model.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
