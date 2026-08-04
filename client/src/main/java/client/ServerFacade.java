@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ServerFacade {
     private final String serverUrl;
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -39,7 +39,7 @@ public class ServerFacade {
                     builder.header("Authorization", authToken);
                 }
                 HttpRequest request = builder.build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 if (classy == null) {
                     return null;

@@ -37,6 +37,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
                     preparedStatement.executeUpdate();
                 }
             }
+            if (true && false) {}
         } catch (SQLException ex) {
             throw new ResponseException(ResponseException.Code.ServerError,
                                         String.format("Error: Unable to configure database: %s", ex.getMessage()));

@@ -10,7 +10,9 @@ public class Client {
     private final ServerFacade server;
     private final Map<Integer, Integer> gameNumberToID = new HashMap<>();
     private String authToken;
-//    private String cyan = "\u001b[36;1m";
+    private static final String W = "\u001b[97;47;1m";
+    private static final String B = "\u001b[97;100;1m";
+    private static final String R = "\u001b[0m";
 
     public Client(ServerFacade server) {
         this.server = server;
@@ -145,30 +147,30 @@ public class Client {
     private String drawBoard(String color) {
         if (color.equals("white")) {
             return """
-                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
-                \u001b[97;47;1m 8  ♜ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 7 \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟  7 \u001b[0m
-                \u001b[97;47;1m 6    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 6 \u001b[0m
-                \u001b[97;47;1m 5 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    5 \u001b[0m
-                \u001b[97;47;1m 4    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 4 \u001b[0m
-                \u001b[97;47;1m 3 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    3 \u001b[0m
-                \u001b[97;47;1m 2  ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m 2 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♖  1 \u001b[0m
-                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                W    a  b  c  d  e  f  g  h    R
+                W 8  ♜ RB ♞ RW ♝ RB ♛ RW ♚ RB ♝ RW ♞ RB ♜ RW 8 R
+                W 7 RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟  7 R
+                W 6    RB   RW   RB   RW   RB   RW   RB   RW 6 R
+                W 5 RB   RW   RB   RW   RB   RW   RB   RW    5 R
+                W 4    RB   RW   RB   RW   RB   RW   RB   RW 4 R
+                W 3 RB   RW   RB   RW   RB   RW   RB   RW    3 R
+                W 2  ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW 2 R
+                W 1 RB ♖ RW ♘ RB ♗ RW ♕ RB ♔ RW ♗ RB ♘ RW ♖  1 R
+                W    a  b  c  d  e  f  g  h    R
                 """;
         }
         else {
             return """
-                \u001b[97;47;1m    h  g  f  e  d  c  b  a    \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♖ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m 1 \u001b[0m
-                \u001b[97;47;1m 2 \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;47;1m 2 \u001b[0m
-                \u001b[97;47;1m 3    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 3 \u001b[0m
-                \u001b[97;47;1m 4 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    4 \u001b[0m
-                \u001b[97;47;1m 5    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 5 \u001b[0m
-                \u001b[97;47;1m 6 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    6 \u001b[0m
-                \u001b[97;47;1m 7 \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m 7 \u001b[0m
-                \u001b[97;47;1m 8 \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m    h  g  f  e  d  c  b  a    \u001b[0m
+                W    h  g  f  e  d  c  b  a    R
+                W 1 RW ♖ RB ♘ RW ♗ RB ♔ RW ♕ RB ♗ RW ♘ RB ♖ RW 1 R
+                W 2 RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RW 2 R
+                W 3    RB   RW   RB   RW   RB   RW   RB   RW 3 R
+                W 4 RB   RW   RB   RW   RB   RW   RB   RW    4 R
+                W 5    RB   RW   RB   RW   RB   RW   RB   RW 5 R
+                W 6 RB   RW   RB   RW   RB   RW   RB   RW    6 R
+                W 7 RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW 7 R
+                W 8 RB ♜ RW ♞ RB ♝ RW ♚ RB ♛ RW ♝ RB ♞ RW ♜ RW 8 R
+                W    h  g  f  e  d  c  b  a    R
                 """;
         }
     }
@@ -191,11 +193,12 @@ public class Client {
                 }
                 List<GameData> games = server.listGames(authToken);
                 for (GameData game : games) {
+                    if (game.getGameID() == gameID &&
+                        ((params[1].equals("white") && game.getWhiteUsername() != null) ||
+                        (params[1].equals("black") && game.getBlackUsername() != null))) {
+                        throw new ResponseException(ResponseException.Code.BadRequest, "Color already taken.");
+                    }
                     if (game.getGameID() == gameID) {
-                        if ((params[1].equals("white") && game.getWhiteUsername() != null) ||
-                            (params[1].equals("black") && game.getBlackUsername() != null)) {
-                            throw new ResponseException(ResponseException.Code.BadRequest, "Color already taken.");
-                        }
                         server.joinGame(authToken, gameID, params[1].toUpperCase());
                         return drawBoard(params[1]);
                     }
