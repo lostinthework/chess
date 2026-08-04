@@ -78,7 +78,7 @@ public class DatabaseTests {
 
         //test that we can still log in
         serverFacade.login(TEST_USER);
-        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Unable to login");
+        Assertions.assertEquals(200, serverFacade.getStatusCode(), "Error: Unable to login");
     }
 
     @Test
