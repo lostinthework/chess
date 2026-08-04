@@ -75,7 +75,13 @@ public class Client {
             throw new ResponseException(ResponseException.Code.BadRequest, String.format("You must log out before you can log in again."));
         }
         if (params.length == 2) {
-            AuthData auth = server.login(params[0], params[1]);
+            AuthData auth;
+            try {
+                auth = server.login(params[0], params[1]);
+            }
+            catch (ResponseException e) {
+                throw new ResponseException(ResponseException.Code.BadRequest, String.format("Incorrect username or password."));
+            }
             authToken = auth.getauthToken();
             return String.format("You logged in as %s.\n", params[0]);
         }
@@ -112,12 +118,10 @@ public class Client {
                 String prettyprint = String.format("---------------------\n" +
                                                    ">>> Game %d <<<\n" +
                                                    "Name:          %s\n" +
-                                                   "Game ID:       %d\n" +
                                                    "White player:  %s\n" +
                                                    "Black player:  %s\n\n",
                                                    gameNumber,
                                                    game.getName(),
-                                                   game.getGameID(),
                                                    whitename,
                                                    blackname);
                 result.append(prettyprint);
@@ -131,7 +135,7 @@ public class Client {
         if (authToken != null) {
             if (params.length == 1) {
                 int gameID = server.createGame(authToken, params[0]);
-                return String.format("Created game %s with game ID %d.\n", params[0], gameID);
+                return String.format("Created game %s.\n", params[0]);
             }
             throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <name>");
         }
@@ -142,29 +146,29 @@ public class Client {
         if (color.equals("white")) {
             return """
                 \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
-                \u001b[97;47;1m 1  ♜ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟  8 \u001b[0m
-                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
-                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
-                \u001b[97;47;1m 1  ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♖  8 \u001b[0m
+                \u001b[97;47;1m 8  ♜ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m 7 \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟  7 \u001b[0m
+                \u001b[97;47;1m 6    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 6 \u001b[0m
+                \u001b[97;47;1m 5 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    5 \u001b[0m
+                \u001b[97;47;1m 4    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 4 \u001b[0m
+                \u001b[97;47;1m 3 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    3 \u001b[0m
+                \u001b[97;47;1m 2  ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m 2 \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♖  1 \u001b[0m
                 \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
                 """;
         }
         else {
             return """
-                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♖ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
-                \u001b[97;47;1m 1    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m 1 \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
-                \u001b[97;47;1m    a  b  c  d  e  f  g  h    \u001b[0m
+                \u001b[97;47;1m    h  g  f  e  d  c  b  a    \u001b[0m
+                \u001b[97;47;1m 1 \u001b[0m\u001b[97;47;1m ♖ \u001b[0m\u001b[97;100;1m ♘ \u001b[0m\u001b[97;47;1m ♗ \u001b[0m\u001b[97;100;1m ♔ \u001b[0m\u001b[97;47;1m ♕ \u001b[0m\u001b[97;100;1m ♗ \u001b[0m\u001b[97;47;1m ♘ \u001b[0m\u001b[97;100;1m ♖ \u001b[0m\u001b[97;47;1m 1 \u001b[0m
+                \u001b[97;47;1m 2 \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;100;1m ♙ \u001b[0m\u001b[97;47;1m ♙ \u001b[0m\u001b[97;47;1m 2 \u001b[0m
+                \u001b[97;47;1m 3    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 3 \u001b[0m
+                \u001b[97;47;1m 4 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    4 \u001b[0m
+                \u001b[97;47;1m 5    \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m 5 \u001b[0m
+                \u001b[97;47;1m 6 \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m   \u001b[0m\u001b[97;100;1m   \u001b[0m\u001b[97;47;1m    6 \u001b[0m
+                \u001b[97;47;1m 7 \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m ♟ \u001b[0m\u001b[97;100;1m ♟ \u001b[0m\u001b[97;47;1m 7 \u001b[0m
+                \u001b[97;47;1m 8 \u001b[0m\u001b[97;100;1m ♜ \u001b[0m\u001b[97;47;1m ♞ \u001b[0m\u001b[97;100;1m ♝ \u001b[0m\u001b[97;47;1m ♚ \u001b[0m\u001b[97;100;1m ♛ \u001b[0m\u001b[97;47;1m ♝ \u001b[0m\u001b[97;100;1m ♞ \u001b[0m\u001b[97;47;1m ♜ \u001b[0m\u001b[97;47;1m 8 \u001b[0m
+                \u001b[97;47;1m    h  g  f  e  d  c  b  a    \u001b[0m
                 """;
         }
     }
@@ -203,7 +207,7 @@ public class Client {
         throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
-
+    // Make sure to fix this before phase 6 so that it actually checks to see if the game exists!
     public String observe(String... params) throws ResponseException {
         if (authToken != null) {
             if (params.length == 1) {
