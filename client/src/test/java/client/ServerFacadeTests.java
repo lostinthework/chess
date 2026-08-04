@@ -18,7 +18,7 @@ public class ServerFacadeTests {
     private static ServerFacade facade;
 
     @BeforeEach
-    public static void init() {
+    public void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
