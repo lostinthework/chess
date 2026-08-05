@@ -214,6 +214,16 @@ public class Client {
     public String observe(String... params) throws ResponseException {
         if (authToken != null) {
             if (params.length == 1) {
+                Integer gameID;
+                try {
+                    gameID = gameNumberToID.get(Integer.parseInt(params[0]));
+                }
+                catch (NumberFormatException e) {
+                    throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
+                }
+                if (gameID == null) {
+                    throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
+                }
                 return drawBoard("white");
             }
             throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game>");
