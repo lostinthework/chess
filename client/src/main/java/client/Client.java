@@ -231,7 +231,6 @@ public class Client {
         throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
-
     public String help() {
         if (authToken == null) {
             return """
@@ -248,5 +247,29 @@ public class Client {
                 - observe <game>
                 - quit
                 """;
+    }
+
+    public String redraw() throws ResponseException {
+        // return drawBoard()
+        return "";
+    }
+
+    public String leave() throws ResponseException {
+        return "";
+    }
+
+    public String makemove() throws ResponseException {
+        return "";
+    }
+
+    public String resign() throws ResponseException {
+        return "";
+    }
+
+    public String highlight(String... params) throws ResponseException {
+        if (params.length == 1) {
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece>");
     }
 }
