@@ -1,10 +1,15 @@
 package client;
 
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import model.ResponseException;
 import model.AuthData;
 import model.GameData;
 
 import java.util.*;
+
+import static chess.ChessPiece.PieceType.*;
 
 public class Client {
     private final ServerFacade server;
@@ -48,6 +53,7 @@ public class Client {
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
                 case "observe" -> observe(params);
+                case "move" -> move(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -249,6 +255,10 @@ public class Client {
                 """;
     }
 
+//    private void notify(Notification notification) {
+//
+//    }
+
     public String redraw() throws ResponseException {
         // return drawBoard()
         return "";
@@ -258,8 +268,38 @@ public class Client {
         return "";
     }
 
-    public String makemove() throws ResponseException {
-        return "";
+    private ChessPosition notationToPosition (char file, int rank) throws ResponseException {
+        if (rank < 1 || rank > 8) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
+        }
+        int col = switch (file) {
+            case 'a' -> 1;
+            case 'b' -> 2;
+            case 'c' -> 3;
+            case 'd' -> 4;
+            case 'e' -> 5;
+            case 'f' -> 6;
+            case 'g' -> 7;
+            case 'h' -> 8;
+            default -> throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
+        };
+        return new ChessPosition(rank, col);
+    }
+
+    private ChessMove notationToMove (String startPosition, String endPosition, String color) throws ResponseException {
+        ChessPosition start = notationToPosition(startPosition.charAt(0), startPosition.charAt(1) - '0');
+        ChessPosition end = notationToPosition(endPosition.charAt(0), endPosition.charAt(1) - '0');
+        if ((color == "white" && end.getRow() == 8) || (color == "black" && end.getRow() == 1)) {
+            ChessPiece.PieceType promotionPiece =
+        }
+        return new ChessMove(start, end, promotionPiece);
+    }
+
+    public String move(String... params) throws ResponseException {
+        if (params.length == 2 && params[0].length() == 2 && params[1].length() == 2) {
+            return notationToMove(params[0], params[1], color);
+        }
+        throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
     }
 
     public String resign() throws ResponseException {
