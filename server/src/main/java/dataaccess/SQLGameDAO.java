@@ -138,11 +138,13 @@ public class SQLGameDAO implements InterfaceGameDAO {
     public void updateGame(GameData game) throws DataAccessException {
         String statement;
         int gameID = game.getGameID();
-        statement = "UPDATE games SET game = ? WHERE gameID = ?; ";
+        statement = "UPDATE games SET whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?; ";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement);) {
-            ps.setString(1, new Gson().toJson(game.getGame()));
-            ps.setInt(2, gameID);
+            ps.setString(1, game.getWhiteUsername());
+            ps.setString(2, game.getBlackUsername());
+            ps.setString(3, new Gson().toJson(game.getGame()));
+            ps.setInt(4, gameID);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to update game", e);

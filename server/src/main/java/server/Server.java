@@ -54,6 +54,8 @@ public class Server {
 
         app.put("/game/move", ctx -> new handler.Move(gamesService).handle(ctx));
 
+        app.delete("/game/leave", ctx -> new handler.Leave(gamesService).handle(ctx));
+
         app.exception(ResponseException.class, (e, ctx) -> {
             int status = switch (e.code) {
                 case BadRequest -> 400;

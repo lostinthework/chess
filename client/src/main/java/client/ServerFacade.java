@@ -2,10 +2,7 @@ package client;
 
 import chess.ChessMove;
 import com.google.gson.Gson;
-import model.MoveRequest;
-import model.ResponseException;
-import model.AuthData;
-import model.GameData;
+import model.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -98,6 +95,11 @@ public class ServerFacade {
 
     public GameData move(String authToken, int gameID, ChessMove move) throws ResponseException {
         MoveRequest request = new MoveRequest(gameID, move);
-        return makeRequest("POST", "/game/move", authToken, request, GameData.class);
+        return makeRequest("PUT", "/game/move", authToken, request, GameData.class);
+    }
+
+    public void leave(String authToken, Integer currentGameID) throws ResponseException {
+        LeaveRequest request = new LeaveRequest(currentGameID);
+        makeRequest("DELETE", "/game/leave", authToken, request, null);
     }
 }

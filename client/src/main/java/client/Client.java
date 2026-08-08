@@ -257,6 +257,7 @@ public class Client {
                 if (gameID == null) {
                     throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
                 }
+                currentGameID = gameID;
                 observer = true;
                 return drawBoard("white");
             }
@@ -322,7 +323,11 @@ public class Client {
         if (currentGameID == null) {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before leaving it.");
         }
-        return "";
+        currentGameID = null;
+        color = null;
+        observer = false;
+        server.leave(authToken, currentGameID);
+        return "You left the game.";
     }
 
     private ChessPosition notationToPosition (char file, int rank) throws ResponseException {
