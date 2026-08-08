@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
@@ -9,19 +10,21 @@ import model.GameData;
 
 import java.util.*;
 
-import static chess.ChessPiece.PieceType.*;
-
 public class Client {
     private final ServerFacade server;
     private final Map<Integer, Integer> gameNumberToID = new HashMap<>();
     private String authToken;
-    private static final String W = "\u001b[97;47;1m";
-    private static final String B = "\u001b[97;100;1m";
+    private static final String FW = "\u001b[97;1m";
+    private static final String FB = "\u001b[30;1m";
+    private static final String BW = "\u001b[47;1m";
+    private static final String BB = "\u001b[100;1m";
     private static final String R = "\u001b[0m";
+
     private final Scanner scanner = new Scanner(System.in);
     private boolean observer = false;
     private String color = null;
     private Integer currentGameID = null;
+    private ChessGame currentGame = null;
 
     public Client(ServerFacade server) {
         this.server = server;
@@ -169,34 +172,47 @@ public class Client {
         throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
     }
 
+    private String piece(int row, int col) {
+        ChessPiece piece = currentGame.getBoard().getPiece(new ChessPosition(row, col));
+        if (piece == null) {
+            return "   ";
+        }
+        return switch (piece.getPieceType()) {
+            case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♔ " : FB + " ♚ " + R;
+            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♕ " : FB + " ♛ " + R;
+            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♖ " : FB + " ♜ " + R;
+            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♗ " : FB + " ♝ " + R;
+            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♘ " : FB + " ♞ " + R;
+            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE ? FW + " ♙ " : FB + " ♟ " + R;
+        };
+    }
+
     private String drawBoard(String color) {
         if (color.equals("white")) {
-            return """
-                W    a  b  c  d  e  f  g  h    R
-                W 8  ♜ RB ♞ RW ♝ RB ♛ RW ♚ RB ♝ RW ♞ RB ♜ RW 8 R
-                W 7 RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟  7 R
-                W 6    RB   RW   RB   RW   RB   RW   RB   RW 6 R
-                W 5 RB   RW   RB   RW   RB   RW   RB   RW    5 R
-                W 4    RB   RW   RB   RW   RB   RW   RB   RW 4 R
-                W 3 RB   RW   RB   RW   RB   RW   RB   RW    3 R
-                W 2  ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW 2 R
-                W 1 RB ♖ RW ♘ RB ♗ RW ♕ RB ♔ RW ♗ RB ♘ RW ♖  1 R
-                W    a  b  c  d  e  f  g  h    R
-                """;
+            return
+                FW + BW + "    a  b  c  d  e  f  g  h    " + R + "\n" +
+                FW + BW + " 8 " + R + BW + piece(8, 1) + BB + piece(8, 2) + BW + piece(8, 3) + BB + piece(8, 4) + BW + piece(8, 5) + BB + piece(8, 6) + BW + piece(8, 7) + BB + piece(8, 8) + FW + BW + " 8 \n" + R +
+                FW + BW + " 7 " + R + BB + piece(7, 1) + BW + piece(7, 2) + BB + piece(7, 3) + BW + piece(7, 4) + BB + piece(7, 5) + BW + piece(7, 6) + BB + piece(7, 7) + BW + piece(7, 8) + FW + BW + " 7 \n" + R +
+                FW + BW + " 6 " + R + BW + piece(6, 1) + BB + piece(6, 2) + BW + piece(6, 3) + BB + piece(6, 4) + BW + piece(6, 5) + BB + piece(6, 6) + BW + piece(6, 7) + BB + piece(6, 8) + FW + BW + " 6 \n" + R +
+                FW + BW + " 5 " + R + BB + piece(5, 1) + BW + piece(5, 2) + BB + piece(5, 3) + BW + piece(5, 4) + BB + piece(5, 5) + BW + piece(5, 6) + BB + piece(5, 7) + BW + piece(5, 8) + FW + BW + " 5 \n" + R +
+                FW + BW + " 4 " + R + BW + piece(4, 1) + BB + piece(4, 2) + BW + piece(4, 3) + BB + piece(4, 4) + BW + piece(4, 5) + BB + piece(4, 6) + BW + piece(4, 7) + BB + piece(4, 8) + FW + BW + " 4 \n" + R +
+                FW + BW + " 3 " + R + BB + piece(3, 1) + BW + piece(3, 2) + BB + piece(3, 3) + BW + piece(3, 4) + BB + piece(3, 5) + BW + piece(3, 6) + BB + piece(3, 7) + BW + piece(3, 8) + FW + BW + " 3 \n" + R +
+                FW + BW + " 2 " + R + BW + piece(2, 1) + BB + piece(2, 2) + BW + piece(2, 3) + BB + piece(2, 4) + BW + piece(2, 5) + BB + piece(2, 6) + BW + piece(2, 7) + BB + piece(2, 8) + FW + BW + " 2 \n" + R +
+                FW + BW + " 1 " + R + BB + piece(1, 1) + BW + piece(1, 2) + BB + piece(1, 3) + BW + piece(1, 4) + BB + piece(1, 5) + BW + piece(1, 6) + BB + piece(1, 7) + BW + piece(1, 8) + FW + BW + " 1 \n" + R +
+                FW + BW + "    a  b  c  d  e  f  g  h    " + R;
         }
         else {
-            return """
-                W    h  g  f  e  d  c  b  a    R
-                W 1 RW ♖ RB ♘ RW ♗ RB ♔ RW ♕ RB ♗ RW ♘ RB ♖ RW 1 R
-                W 2 RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RB ♙ RW ♙ RW 2 R
-                W 3    RB   RW   RB   RW   RB   RW   RB   RW 3 R
-                W 4 RB   RW   RB   RW   RB   RW   RB   RW    4 R
-                W 5    RB   RW   RB   RW   RB   RW   RB   RW 5 R
-                W 6 RB   RW   RB   RW   RB   RW   RB   RW    6 R
-                W 7 RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW ♟ RB ♟ RW 7 R
-                W 8 RB ♜ RW ♞ RB ♝ RW ♚ RB ♛ RW ♝ RB ♞ RW ♜ RW 8 R
-                W    h  g  f  e  d  c  b  a    R
-                """;
+            return
+                FW + BW + "    h  g  f  e  d  c  b  a    " + R + "\n" +
+                FW + BW + " 1 " + R + BW + piece(1, 8) + BB + piece(1, 7) + BW + piece(1, 6) + BB + piece(1, 5) + BW + piece(1, 4) + BB + piece(1, 3) + BW + piece(1, 2) + BB + piece(1, 1) + FW + BW + " 1 \n" + R +
+                FW + BW + " 2 " + R + BB + piece(2, 8) + BW + piece(2, 7) + BB + piece(2, 6) + BW + piece(2, 5) + BB + piece(2, 4) + BW + piece(2, 3) + BB + piece(2, 2) + BW + piece(2, 1) + FW + BB + " 2 \n" + R +
+                FW + BW + " 3 " + R + BW + piece(3, 8) + BB + piece(3, 7) + BW + piece(3, 6) + BB + piece(3, 5) + BW + piece(3, 4) + BB + piece(3, 3) + BW + piece(3, 2) + BB + piece(3, 1) + FW + BW + " 3 \n" + R +
+                FW + BW + " 4 " + R + BB + piece(4, 8) + BW + piece(4, 7) + BB + piece(4, 6) + BW + piece(4, 5) + BB + piece(4, 4) + BW + piece(4, 3) + BB + piece(4, 2) + BW + piece(4, 1) + FW + BB + " 4 \n" + R +
+                FW + BW + " 5 " + R + BW + piece(5, 8) + BB + piece(5, 7) + BW + piece(5, 6) + BB + piece(5, 5) + BW + piece(5, 4) + BB + piece(5, 3) + BW + piece(5, 2) + BB + piece(5, 1) + FW + BW + " 5 \n" + R +
+                FW + BW + " 6 " + R + BB + piece(6, 8) + BW + piece(6, 7) + BB + piece(6, 6) + BW + piece(6, 5) + BB + piece(6, 4) + BW + piece(6, 3) + BB + piece(6, 2) + BW + piece(6, 1) + FW + BB + " 6 \n" + R +
+                FW + BW + " 7 " + R + BW + piece(7, 8) + BB + piece(7, 7) + BW + piece(7, 6) + BB + piece(7, 5) + BW + piece(7, 4) + BB + piece(7, 3) + BW + piece(7, 2) + BB + piece(7, 1) + FW + BW + " 7 \n" + R +
+                FW + BW + " 8 " + R + BB + piece(8, 8) + BW + piece(8, 7) + BB + piece(8, 6) + BW + piece(8, 5) + BB + piece(8, 4) + BW + piece(8, 3) + BB + piece(8, 2) + BW + piece(8, 1) + FW + BB + " 8 \n" + R +
+                FW + BW + "    h  g  f  e  d  c  b  a    " + R;
         }
     }
 
@@ -227,8 +243,9 @@ public class Client {
                         throw new ResponseException(ResponseException.Code.BadRequest, "Color already taken.");
                     }
                     if (game.getGameID() == gameID) {
-                        server.joinGame(authToken, gameID, params[1].toUpperCase());
+                        GameData joinedGame = server.joinGame(authToken, gameID, params[1].toUpperCase());
                         currentGameID = game.getGameID();
+                        currentGame = joinedGame.getGame();
                         color = params[1];
                         return drawBoard(params[1]);
                     }
@@ -257,9 +274,16 @@ public class Client {
                 if (gameID == null) {
                     throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
                 }
-                currentGameID = gameID;
-                observer = true;
-                return drawBoard("white");
+                List<GameData> games = server.listGames(authToken);
+                for (GameData game : games) {
+                    if (game.getGameID() == gameID) {
+                        currentGameID = game.getGameID();
+                        currentGame = game.getGame();
+                        observer = true;
+                        color = "white";
+                        return drawBoard(color);
+                    }
+                }
             }
             throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game>");
         }
@@ -323,10 +347,13 @@ public class Client {
         if (currentGameID == null) {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before leaving it.");
         }
+
+        server.leave(authToken, currentGameID);
         currentGameID = null;
+        currentGame = null;
         color = null;
         observer = false;
-        server.leave(authToken, currentGameID);
+
         return "You left the game.";
     }
 
@@ -374,7 +401,7 @@ public class Client {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before making a move.");
         }
         if (params.length == 2 && params[0].length() == 2 && params[1].length() == 2) {
-            server.move(authToken, currentGameID, notationToMove(params[0], params[1], color));
+            currentGame = server.move(authToken, currentGameID, notationToMove(params[0], params[1], color)).getGame();
             return drawBoard(color);
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");

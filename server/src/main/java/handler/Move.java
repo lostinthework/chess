@@ -65,6 +65,6 @@ public class Move {
 
         gamesService.updateGame(game);
 
-        ctx.result("{}");
+        ctx.result(gson.toJson(game));
     }
 }

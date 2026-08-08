@@ -88,9 +88,9 @@ public class ServerFacade {
         return result.getGameID();
     }
 
-    public void joinGame(String authToken, int gameID, String color) throws ResponseException {
+    public GameData joinGame(String authToken, int gameID, String color) throws ResponseException {
         JoinRequest request = new JoinRequest(gameID, color);
-        makeRequest("PUT", "/game", authToken, request, null);
+        return makeRequest("PUT", "/game", authToken, request, GameData.class);
     }
 
     public GameData move(String authToken, int gameID, ChessMove move) throws ResponseException {

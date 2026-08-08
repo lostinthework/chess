@@ -48,7 +48,7 @@ public class Join {
 
         // Join game
         gamesService.joinGame(gameID, gamesService.getUsername(authToken), color);
-//        gametoJoin.join(gamesService.getUsername(authToken), color);
-        ctx.result("{}");
+        gametoJoin.join(gamesService.getUsername(authToken), color);
+        ctx.result(gson.toJson(gametoJoin));
     }
 }
