@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -45,11 +46,20 @@ public class ServerFacade {
                 }
                 return gson.fromJson(response.body(), classy);
             }
+
+            String message;
+            try {
+                message = gson.fromJson(response.body(), Map.class).get("message").toString();
+            }
+            catch (Exception e) {
+                message = response.body();
+            }
+
             switch (response.statusCode()) {
-                case 400 -> throw new ResponseException(ResponseException.Code.BadRequest, response.body());
-                case 401 -> throw new ResponseException(ResponseException.Code.Unauthorized, response.body());
-                case 403 -> throw new ResponseException(ResponseException.Code.Forbidden, response.body());
-                case 500 -> throw new ResponseException(ResponseException.Code.ServerError, response.body());
+                case 400 -> throw new ResponseException(ResponseException.Code.BadRequest, message);
+                case 401 -> throw new ResponseException(ResponseException.Code.Unauthorized, message);
+                case 403 -> throw new ResponseException(ResponseException.Code.Forbidden, message);
+                case 500 -> throw new ResponseException(ResponseException.Code.ServerError, message);
                 default -> throw new ResponseException(ResponseException.Code.ServerError,
                                 "Unexpected status: " + response.statusCode());
             }
