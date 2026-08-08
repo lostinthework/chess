@@ -1,6 +1,8 @@
 package client;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
+import model.MoveRequest;
 import model.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -92,5 +94,10 @@ public class ServerFacade {
     public void joinGame(String authToken, int gameID, String color) throws ResponseException {
         JoinRequest request = new JoinRequest(gameID, color);
         makeRequest("PUT", "/game", authToken, request, null);
+    }
+
+    public GameData move(String authToken, int gameID, ChessMove move) throws ResponseException {
+        MoveRequest request = new MoveRequest(gameID, move);
+        return makeRequest("POST", "/game/move", authToken, request, GameData.class);
     }
 }

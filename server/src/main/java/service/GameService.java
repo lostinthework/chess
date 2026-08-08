@@ -24,5 +24,7 @@ public class GameService extends AuthService {
     public void joinGame(int gameID, String username, String color) throws DataAccessException {
         gameDAO.joinGame(gameID, username, color);
     }
-
+    public void updateGame(GameData game) throws DataAccessException {
+        gameDAO.updateGame(game);
+    }
 }

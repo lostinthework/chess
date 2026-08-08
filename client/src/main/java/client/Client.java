@@ -18,13 +18,16 @@ public class Client {
     private static final String W = "\u001b[97;47;1m";
     private static final String B = "\u001b[97;100;1m";
     private static final String R = "\u001b[0m";
+    private final Scanner scanner = new Scanner(System.in);
+    private boolean observer = false;
+    private String color = null;
+    private Integer currentGameID = null;
 
     public Client(ServerFacade server) {
         this.server = server;
     }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
         String result = "";
         System.out.print("\uD83D\uDC51 Welcome to 240 chess. Type Help to get started. \uD83D\uDC51\n");
         while (!result.equals("quit")) {
@@ -53,7 +56,11 @@ public class Client {
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
                 case "observe" -> observe(params);
+                case "redraw" -> redraw();
+                case "leave" -> leave();
                 case "move" -> move(params);
+                case "resign" -> resign();
+                case "highlight" -> highlight(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -63,6 +70,9 @@ public class Client {
     }
 
     public String register(String... params) throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the game before registering a new user.");
+        }
         if (params.length == 3) {
             AuthData auth;
             try {
@@ -97,6 +107,9 @@ public class Client {
     }
 
     public String logout() throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the game before logging out.");
+        }
         if (authToken != null) {
             server.logout(authToken);
             authToken = null;
@@ -106,6 +119,9 @@ public class Client {
     }
 
     public String listGames() throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the current game before listing games.");
+        }
         if (authToken != null) {
             gameNumberToID.clear();
             List<GameData> games = server.listGames(authToken);
@@ -140,6 +156,9 @@ public class Client {
     }
 
     public String createGame(String... params) throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the current game before creating a new game.");
+        }
         if (authToken != null) {
             if (params.length == 1) {
                 int gameID = server.createGame(authToken, params[0]);
@@ -182,6 +201,9 @@ public class Client {
     }
 
     public String joinGame(String... params) throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the current game before joining a new game.");
+        }
         if (authToken != null) {
             if (params.length == 2) {
                 Integer gameID;
@@ -206,6 +228,7 @@ public class Client {
                     }
                     if (game.getGameID() == gameID) {
                         server.joinGame(authToken, gameID, params[1].toUpperCase());
+                        currentGameID = game.getGameID();
                         return drawBoard(params[1]);
                     }
                 }
@@ -218,6 +241,9 @@ public class Client {
 
     // Make sure to fix this before phase 6 so that it actually checks to see if the game exists!
     public String observe(String... params) throws ResponseException {
+        if (currentGameID != null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must leave the current game before observing a new game.");
+        }
         if (authToken != null) {
             if (params.length == 1) {
                 Integer gameID;
@@ -230,6 +256,7 @@ public class Client {
                 if (gameID == null) {
                     throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
                 }
+                observer = true;
                 return drawBoard("white");
             }
             throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <game>");
@@ -238,6 +265,24 @@ public class Client {
     }
 
     public String help() {
+        if (currentGameID != null) {
+            if (observer) {
+                return """
+                        - redraw
+                        - leave
+                        - highlight <piece>
+                        """;
+            }
+            else {
+                return """
+                    - redraw
+                    - leave
+                    - move <piece> <square>
+                    - resign
+                    - highlight <piece>
+                    """;
+            }
+        }
         if (authToken == null) {
             return """
                     - register <username> <password> <email>
@@ -260,8 +305,7 @@ public class Client {
 //    }
 
     public String redraw() throws ResponseException {
-        // return drawBoard()
-        return "";
+        return drawBoard(color);
     }
 
     public String leave() throws ResponseException {
@@ -289,15 +333,25 @@ public class Client {
     private ChessMove notationToMove (String startPosition, String endPosition, String color) throws ResponseException {
         ChessPosition start = notationToPosition(startPosition.charAt(0), startPosition.charAt(1) - '0');
         ChessPosition end = notationToPosition(endPosition.charAt(0), endPosition.charAt(1) - '0');
-        if ((color == "white" && end.getRow() == 8) || (color == "black" && end.getRow() == 1)) {
-            ChessPiece.PieceType promotionPiece =
+        ChessPiece.PieceType promotionPiece = null;
+        if ((color.equals("white") && end.getRow() == 8) || (color.equals("black") && end.getRow() == 1)) {
+            System.out.print("Promote to which piece (queen, rook, bishop, knight): ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            promotionPiece = switch (input) {
+                case "queen" -> ChessPiece.PieceType.QUEEN;
+                case "rook" -> ChessPiece.PieceType.ROOK;
+                case "bishop" -> ChessPiece.PieceType.BISHOP;
+                case "knight" -> ChessPiece.PieceType.KNIGHT;
+                default -> throw new ResponseException(ResponseException.Code.BadRequest, "Invalid promotion piece.");
+            };
         }
         return new ChessMove(start, end, promotionPiece);
     }
 
     public String move(String... params) throws ResponseException {
         if (params.length == 2 && params[0].length() == 2 && params[1].length() == 2) {
-            return notationToMove(params[0], params[1], color);
+            // notationToMove(params[0], params[1], color);
+            return drawBoard(color);
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
     }

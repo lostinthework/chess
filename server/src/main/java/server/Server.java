@@ -52,6 +52,8 @@ public class Server {
         // Clear application
         app.delete("/db", ctx -> new handler.Clear(useryService, gamesService).handle(ctx));
 
+        app.put("/game/move", ctx -> new handler.Move(gamesService).handle(ctx));
+
         app.exception(ResponseException.class, (e, ctx) -> {
             int status = switch (e.code) {
                 case BadRequest -> 400;
