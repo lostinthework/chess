@@ -229,6 +229,7 @@ public class Client {
                     if (game.getGameID() == gameID) {
                         server.joinGame(authToken, gameID, params[1].toUpperCase());
                         currentGameID = game.getGameID();
+                        color = params[1];
                         return drawBoard(params[1]);
                     }
                 }
@@ -305,10 +306,22 @@ public class Client {
 //    }
 
     public String redraw() throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
+        }
+        if (currentGameID == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before redrawing the board.");
+        }
         return drawBoard(color);
     }
 
     public String leave() throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
+        }
+        if (currentGameID == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before leaving it.");
+        }
         return "";
     }
 
@@ -349,18 +362,36 @@ public class Client {
     }
 
     public String move(String... params) throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
+        }
+        if (currentGameID == null || observer) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before making a move.");
+        }
         if (params.length == 2 && params[0].length() == 2 && params[1].length() == 2) {
-            // notationToMove(params[0], params[1], color);
+            server.move(authToken, currentGameID, notationToMove(params[0], params[1], color));
             return drawBoard(color);
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
     }
 
     public String resign() throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
+        }
+        if (currentGameID == null || observer) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before resigning.");
+        }
         return "";
     }
 
     public String highlight(String... params) throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You are not logged in.");
+        }
+        if (currentGameID == null) {
+            throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before highlighting.");
+        }
         if (params.length == 1) {
             return "";
         }
