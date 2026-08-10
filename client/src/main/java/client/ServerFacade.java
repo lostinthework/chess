@@ -10,12 +10,14 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.WebSocket;
 import java.util.List;
 import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    private WebSocket webSocket;
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -32,7 +34,7 @@ public class ServerFacade {
                     case "GET" -> builder.GET();
                     case "POST" -> builder.POST(HttpRequest.BodyPublishers.ofString(json));
                     case "PUT" -> builder.PUT(HttpRequest.BodyPublishers.ofString(json));
-                    case "DELETE" -> builder.DELETE();
+                    case "DELETE" -> builder.method("DELETE", HttpRequest.BodyPublishers.ofString(json));
                 }
 
                 if (authToken != null) {
@@ -70,6 +72,16 @@ public class ServerFacade {
         }
         catch (IOException | URISyntaxException e) {
             throw new ResponseException(ResponseException.Code.ServerError, e.getMessage());
+        }
+    }
+
+    public void connectWebSocket(String authToken, int gameID, Client client) throws ResponseException {
+
+        try {
+            webSocket = HTTP_CLIENT.newWebSocketBuilder().buildAsync(URI.create(serverUrl.replace("http", "ws")), new WebSocketFacade(authToken, gameID, client));
+        }
+        catch (Exception e) {
+            throw new ResponseException (ResponseException.Code.ServerError, e.getMessage());
         }
     }
 

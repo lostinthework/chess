@@ -7,6 +7,7 @@ import chess.ChessPosition;
 import model.ResponseException;
 import model.AuthData;
 import model.GameData;
+import websocket.messages.Notification;
 
 import java.util.*;
 
@@ -204,16 +205,16 @@ public class Client {
         }
         else {
             return
-                FW + BW + "    h  g  f  e  d  c  b  a    " + R + "\n" +
-                FW + BW + " 1 " + R + BW + piece(1, 8) + BB + piece(1, 7) + BW + piece(1, 6) + BB + piece(1, 5) + BW + piece(1, 4) + BB + piece(1, 3) + BW + piece(1, 2) + BB + piece(1, 1) + FW + BW + " 1 " + R + "\n" +
-                FW + BW + " 2 " + R + BB + piece(2, 8) + BW + piece(2, 7) + BB + piece(2, 6) + BW + piece(2, 5) + BB + piece(2, 4) + BW + piece(2, 3) + BB + piece(2, 2) + BW + piece(2, 1) + FW + BW + " 2 " + R + "\n" +
-                FW + BW + " 3 " + R + BW + piece(3, 8) + BB + piece(3, 7) + BW + piece(3, 6) + BB + piece(3, 5) + BW + piece(3, 4) + BB + piece(3, 3) + BW + piece(3, 2) + BB + piece(3, 1) + FW + BW + " 3 " + R + "\n" +
-                FW + BW + " 4 " + R + BB + piece(4, 8) + BW + piece(4, 7) + BB + piece(4, 6) + BW + piece(4, 5) + BB + piece(4, 4) + BW + piece(4, 3) + BB + piece(4, 2) + BW + piece(4, 1) + FW + BW + " 4 " + R + "\n" +
-                FW + BW + " 5 " + R + BW + piece(5, 8) + BB + piece(5, 7) + BW + piece(5, 6) + BB + piece(5, 5) + BW + piece(5, 4) + BB + piece(5, 3) + BW + piece(5, 2) + BB + piece(5, 1) + FW + BW + " 5 " + R + "\n" +
-                FW + BW + " 6 " + R + BB + piece(6, 8) + BW + piece(6, 7) + BB + piece(6, 6) + BW + piece(6, 5) + BB + piece(6, 4) + BW + piece(6, 3) + BB + piece(6, 2) + BW + piece(6, 1) + FW + BW + " 6 " + R + "\n" +
-                FW + BW + " 7 " + R + BW + piece(7, 8) + BB + piece(7, 7) + BW + piece(7, 6) + BB + piece(7, 5) + BW + piece(7, 4) + BB + piece(7, 3) + BW + piece(7, 2) + BB + piece(7, 1) + FW + BW + " 7 " + R + "\n" +
-                FW + BW + " 8 " + R + BB + piece(8, 8) + BW + piece(8, 7) + BB + piece(8, 6) + BW + piece(8, 5) + BB + piece(8, 4) + BW + piece(8, 3) + BB + piece(8, 2) + BW + piece(8, 1) + FW + BW + " 8 " + R + "\n" +
-                FW + BW + "    h  g  f  e  d  c  b  a    " + R + "\n";
+                FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n" +
+                FB + BB + " 1 " + R + BW + piece(1, 8) + BB + piece(1, 7) + BW + piece(1, 6) + BB + piece(1, 5) + BW + piece(1, 4) + BB + piece(1, 3) + BW + piece(1, 2) + BB + piece(1, 1) + FB + BB + " 1 " + R + "\n" +
+                FB + BB + " 2 " + R + BB + piece(2, 8) + BW + piece(2, 7) + BB + piece(2, 6) + BW + piece(2, 5) + BB + piece(2, 4) + BW + piece(2, 3) + BB + piece(2, 2) + BW + piece(2, 1) + FB + BB + " 2 " + R + "\n" +
+                FB + BB + " 3 " + R + BW + piece(3, 8) + BB + piece(3, 7) + BW + piece(3, 6) + BB + piece(3, 5) + BW + piece(3, 4) + BB + piece(3, 3) + BW + piece(3, 2) + BB + piece(3, 1) + FB + BB + " 3 " + R + "\n" +
+                FB + BB + " 4 " + R + BB + piece(4, 8) + BW + piece(4, 7) + BB + piece(4, 6) + BW + piece(4, 5) + BB + piece(4, 4) + BW + piece(4, 3) + BB + piece(4, 2) + BW + piece(4, 1) + FB + BB + " 4 " + R + "\n" +
+                FB + BB + " 5 " + R + BW + piece(5, 8) + BB + piece(5, 7) + BW + piece(5, 6) + BB + piece(5, 5) + BW + piece(5, 4) + BB + piece(5, 3) + BW + piece(5, 2) + BB + piece(5, 1) + FB + BB + " 5 " + R + "\n" +
+                FB + BB + " 6 " + R + BB + piece(6, 8) + BW + piece(6, 7) + BB + piece(6, 6) + BW + piece(6, 5) + BB + piece(6, 4) + BW + piece(6, 3) + BB + piece(6, 2) + BW + piece(6, 1) + FB + BB + " 6 " + R + "\n" +
+                FB + BB + " 7 " + R + BW + piece(7, 8) + BB + piece(7, 7) + BW + piece(7, 6) + BB + piece(7, 5) + BW + piece(7, 4) + BB + piece(7, 3) + BW + piece(7, 2) + BB + piece(7, 1) + FB + BB + " 7 " + R + "\n" +
+                FB + BB + " 8 " + R + BB + piece(8, 8) + BW + piece(8, 7) + BB + piece(8, 6) + BW + piece(8, 5) + BB + piece(8, 4) + BW + piece(8, 3) + BB + piece(8, 2) + BW + piece(8, 1) + FB + BB + " 8 " + R + "\n" +
+                FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n";
         }
     }
 
@@ -248,6 +249,7 @@ public class Client {
                         currentGameID = game.getGameID();
                         currentGame = joinedGame.getGame();
                         color = params[1];
+                        // connect websocket
                         return drawBoard(params[1]);
                     }
                 }
@@ -327,9 +329,9 @@ public class Client {
                 """;
     }
 
-//    private void notify(Notification notification) {
-//
-//    }
+    private void notify(Notification notification) {
+        System.out.println(notification.getMessage());
+    }
 
     public String redraw() throws ResponseException {
         if (authToken == null) {
@@ -355,7 +357,7 @@ public class Client {
         color = null;
         observer = false;
 
-        return "You left the game.";
+        return "You left the game.\n";
     }
 
     private ChessPosition notationToPosition (char file, int rank) throws ResponseException {

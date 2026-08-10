@@ -26,6 +26,7 @@ public class Server {
 
         UserService useryService = new UserService(userDAO, authDAO, gameDAO);
         GameService gamesService = new GameService(userDAO, authDAO, gameDAO);
+        WebSocketHandler webSocketHandler = new WebSocketHandler(gamesService);
 
         app = Javalin.create(config -> {config.staticFiles.add("web");}).start(desiredPort);
 
@@ -55,6 +56,13 @@ public class Server {
         app.put("/game/move", ctx -> new handler.Move(gamesService).handle(ctx));
 
         app.delete("/game/leave", ctx -> new handler.Leave(gamesService).handle(ctx));
+
+        app.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler::onConnect);
+            ws.onMessage(webSocketHandler::onMessage);
+            ws.onClose(webSocketHandler::onClose);
+            ws.onError(webSocketHandler::onError);
+        });
 
         app.exception(ResponseException.class, (e, ctx) -> {
             int status = switch (e.code) {

@@ -28,7 +28,8 @@ public class List {
         var list = gamesService.getGames();
 
         // return games
-        var results = list.stream().map(g -> new ListResult(g.getGameID(), g.getWhiteUsername(), g.getBlackUsername(), g.getName())).toList();
-        ctx.result(gson.toJson(Map.of("games", results)));
+//        var results = list.stream().map(g -> new ListResult(g.getGameID(), g.getWhiteUsername(), g.getBlackUsername(), g.getName())).toList();
+//        ctx.result(gson.toJson(Map.of("games", results)));
+        ctx.result(gson.toJson(Map.of("games", list)));
     }
 }

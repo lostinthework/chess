@@ -147,6 +147,7 @@ public class SQLGameDAO implements InterfaceGameDAO {
             ps.setInt(4, gameID);
             ps.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DataAccessException("Error: Failed to update game", e);
         }
     }
