@@ -127,6 +127,12 @@ public class ServerFacade {
         makeRequest("DELETE", "/game/leave", authToken, request, null);
     }
 
+    public void sendMove(ChessMove move) {
+        if (webSocket != null && webSocketFacade != null) {
+            webSocketFacade.sendMove(webSocket, move);
+        }
+    }
+
     public void leaveWebSocket() {
         if (webSocket != null && webSocketFacade != null) {
             webSocketFacade.sendLeave(webSocket);

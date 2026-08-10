@@ -1,5 +1,7 @@
 package handler;
 
+import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.websocket.WsContext;
@@ -7,6 +9,7 @@ import io.javalin.websocket.WsMessageContext;
 import model.GameData;
 import service.GameService;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
@@ -94,6 +97,100 @@ public class WebSocketHandler {
                 for (WsContext connection : gameConnections) {
                     connection.send(json);
                 }
+            }
+        }
+        if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE) {
+            try {
+                if (gameService.getAuth(command.getAuthToken()) == null) {
+                    ctx.send(gson.toJson(
+                            new ServerMessage(ServerMessage.ServerMessageType.ERROR)
+                    ));
+                    return;
+                }
+                GameData game = gameService.getGame(command.getGameID());
+                if (game == null || command.getMove() == null) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                String username = gameService.getUsername(command.getAuthToken());
+                ChessGame.TeamColor playerColor;
+                if (username.equals(game.getWhiteUsername())) {
+                    playerColor = ChessGame.TeamColor.WHITE;
+                }
+                else if (username.equals(game.getBlackUsername())) {
+                    playerColor = ChessGame.TeamColor.BLACK;
+                }
+                else {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                if (game.getGame().getTeamTurn() != playerColor) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                try {
+                    game.getGame().makeMove(command.getMove());
+                }
+                catch (InvalidMoveException e) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                gameService.updateGame(game);
+                LoadGame loadGame = new LoadGame(game);
+                String json = gson.toJson(loadGame);
+                Set<WsContext> gameConnections = connections.get(command.getGameID());
+                if (gameConnections != null) {
+                    for (WsContext connection : gameConnections) {
+                        connection.send(json);
+                    }
+                }
+            }
+            catch (Exception e) {
+                System.out.println("WebSocket move error: " + e.getMessage());
+            }
+        }
+        if (command.getCommandType() == UserGameCommand.CommandType.RESIGN) {
+            try {
+                if (gameService.getAuth(command.getAuthToken()) == null) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                int gameID = command.getGameID();
+                GameData game = gameService.getGame(gameID);
+                if (game == null) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                String username = gameService.getUsername(command.getAuthToken());
+                boolean isWhite = username.equals(game.getWhiteUsername());
+                boolean isBlack = username.equals(game.getBlackUsername());
+                if (!isWhite && !isBlack) {
+                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    return;
+                }
+                String winner;
+                if (isWhite) {
+                    winner = game.getBlackUsername();
+                } else {
+                    winner = game.getWhiteUsername();
+                }
+                Notification notification = new Notification(username + " resigned. " + winner + " wins.");
+                String json = gson.toJson(notification);
+                Set<WsContext> gameConnections = connections.get(gameID);
+                if (gameConnections != null) {
+                    for (WsContext connection : gameConnections) {
+                        connection.send(json);
+                    }
+                }
+                gameService.deleteGame(gameID);
+                if (gameConnections != null) {
+                    for (WsContext connection : gameConnections) {
+                        connectionGames.remove(connection);
+                    }
+                }
+                connections.remove(gameID);
+            } catch (Exception e) {
+                System.out.println("WebSocket resign error: " + e.getMessage());
             }
         }
     }

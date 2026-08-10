@@ -34,6 +34,7 @@ public class MemoryGameDAO implements InterfaceGameDAO {
     public void deleteGameData() {
         games = new ArrayList<>();
     }
+    public void deleteGame(int gameID) {}
 
     public void updateGame(GameData newGame) {
 //        GameData game = getGamebyID(newGame.getGameID());

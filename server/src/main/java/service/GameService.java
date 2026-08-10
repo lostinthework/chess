@@ -27,4 +27,7 @@ public class GameService extends AuthService {
     public void updateGame(GameData game) throws DataAccessException {
         gameDAO.updateGame(game);
     }
+    public void deleteGame(int gameID) throws DataAccessException {
+        gameDAO.deleteGame(gameID);
+    }
 }

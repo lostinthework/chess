@@ -107,6 +107,17 @@ public class SQLGameDAO implements InterfaceGameDAO {
         }
     }
 
+    public void deleteGame(int gameID) throws DataAccessException {
+        String statement = "DELETE FROM games WHERE gameID = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setInt(1, gameID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: Failed to delete game", e);
+        }
+    }
+
     public void deleteGameData() throws DataAccessException {
         var statement = "TRUNCATE games";
         try (Connection conn = DatabaseManager.getConnection();

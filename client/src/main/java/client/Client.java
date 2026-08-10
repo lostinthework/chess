@@ -362,6 +362,12 @@ public class Client {
         return "You left the game.\n";
     }
 
+    public void updateGame(GameData game) {
+        ChessGame board = game.getGame();
+        currentGame = board;
+        System.out.print("\n" + drawBoard(color));
+    }
+
     private ChessPosition notationToPosition (char file, int rank) throws ResponseException {
         if (rank < 1 || rank > 8) {
             throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
@@ -406,13 +412,18 @@ public class Client {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before making a move.");
         }
         if (params.length == 2 && params[0].length() == 2 && params[1].length() == 2) {
-            try {
-                currentGame = server.move(authToken, currentGameID, notationToMove(params[0], params[1], color)).getGame();
-            }
-            catch (Exception e) {
-                throw new ResponseException(ResponseException.Code.BadRequest, e.getMessage());
-            }
-            return drawBoard(color);
+//            try {
+//                currentGame = server.move(authToken, currentGameID, notationToMove(params[0], params[1], color)).getGame();
+//            }
+//            catch (Exception e) {
+//                throw new ResponseException(ResponseException.Code.BadRequest, e.getMessage());
+//            }
+//            return drawBoard(color);
+
+            ChessMove move = notationToMove(params[0], params[1], color);
+            server.sendMove(move);
+
+            return "";
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece> <square>");
     }

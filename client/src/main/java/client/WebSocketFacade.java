@@ -1,7 +1,9 @@
 package client;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
@@ -24,18 +26,28 @@ public class WebSocketFacade implements WebSocket.Listener {
     }
 
     public void sendConnect(WebSocket webSocket, String authToken, int gameID) {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, null);
         webSocket.sendText(gson.toJson(command), true);
     }
 
     public void sendLeave(WebSocket webSocket) {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, null);
         webSocket.sendText(gson.toJson(command), true);
     }
 
     public void sendObserve(WebSocket webSocket) {
         UserGameCommand command =
-                new UserGameCommand(UserGameCommand.CommandType.OBSERVE, authToken, gameID);
+                new UserGameCommand(UserGameCommand.CommandType.OBSERVE, authToken, gameID, null);
+        webSocket.sendText(gson.toJson(command), true);
+    }
+
+    public void sendMove(WebSocket webSocket, ChessMove move) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
+        webSocket.sendText(gson.toJson(command), true);
+    }
+
+    public void sendResign(WebSocket webSocket) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, null);
         webSocket.sendText(gson.toJson(command), true);
     }
 
@@ -53,9 +65,15 @@ public class WebSocketFacade implements WebSocket.Listener {
         ServerMessage message = gson.fromJson(data.toString(), ServerMessage.class);
 
         if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            // We'll handle the actual notification here next
             Notification notification = gson.fromJson(data.toString(), Notification.class);
             client.notify(notification);
+        }
+        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            LoadGame loadGame = gson.fromJson(data.toString(), LoadGame.class);
+            client.updateGame(loadGame.getGame());
+        }
+        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            System.out.println("WebSocket error from server.");
         }
 
         webSocket.request(1);
