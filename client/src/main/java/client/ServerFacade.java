@@ -3,6 +3,7 @@ package client;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.*;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,6 +19,7 @@ public class ServerFacade {
     private final String serverUrl;
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private WebSocket webSocket;
+    private WebSocketFacade webSocketFacade;
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -123,5 +125,11 @@ public class ServerFacade {
     public void leave(String authToken, Integer currentGameID) throws ResponseException {
         LeaveRequest request = new LeaveRequest(currentGameID);
         makeRequest("DELETE", "/game/leave", authToken, request, null);
+    }
+
+    public void leaveWebSocket() {
+        if (webSocket != null && webSocketFacade != null) {
+            webSocketFacade.sendLeave(webSocket);
+        }
     }
 }

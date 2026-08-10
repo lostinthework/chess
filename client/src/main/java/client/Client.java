@@ -352,7 +352,8 @@ public class Client {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before leaving it.");
         }
 
-        server.leave(authToken, currentGameID);
+        server.leaveWebSocket();
+//        server.leave(authToken, currentGameID);
         currentGameID = null;
         currentGame = null;
         color = null;

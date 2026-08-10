@@ -18,6 +18,7 @@ public class WebSocketHandler {
 
     private final GameService gameService;
     private final Map<Integer, Set<WsContext>> connections;
+    private final Map<WsContext, Integer> connectionGames;
 
     public WebSocketHandler(GameService gameService) {
         this.gameService = gameService;
@@ -48,6 +49,7 @@ public class WebSocketHandler {
                     return;
                 }
                 connections.computeIfAbsent(command.getGameID(), id -> new HashSet<>()).add(ctx);
+                connectionGames.put(ctx, command.getGameID());
                 String username = gameService.getUsername(command.getAuthToken());
 
                 String color;
@@ -72,6 +74,16 @@ public class WebSocketHandler {
 
     public void onClose(WsContext ctx) {
         System.out.println("WebSocket closed");
+        Integer gameID = connectionGames.remove(ctx);
+        if (gameID != null) {
+            Set<WsContext> gameConnections = connections.get(gameID);
+            if (gameConnections != null) {
+                gameConnections.remove(ctx);
+                if (gameConnections.isEmpty()) {
+                    connections.remove(gameID);
+                }
+            }
+        }
     }
 
     public void onError(WsContext ctx) {

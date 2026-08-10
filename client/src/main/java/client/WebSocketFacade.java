@@ -26,6 +26,11 @@ public class WebSocketFacade implements WebSocket.Listener {
         webSocket.sendText(gson.toJson(command), true);
     }
 
+    public void sendLeave(WebSocket webSocket) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        webSocket.sendText(gson.toJson(command), true);
+    }
+
     @Override
     public void onOpen(WebSocket webSocket) {
         System.out.println("WebSocket opened");
