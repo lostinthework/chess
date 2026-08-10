@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import handler.ErrorHandler;
+import handler.WebSocketHandler;
 import model.ResponseException;
 import service.*;
 import io.javalin.Javalin;

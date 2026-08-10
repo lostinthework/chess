@@ -11,9 +11,13 @@ import java.util.concurrent.CompletionStage;
 public class WebSocketFacade implements WebSocket.Listener {
 
     private final Gson gson = new Gson();
+    private final String authToken;
+    private final int gameID;
     private final Client client;
 
-    public WebSocketFacade(Client client) {
+    public WebSocketFacade(String authToken, int gameID, Client client) {
+        this.authToken = authToken;
+        this.gameID = gameID;
         this.client = client;
     }
 
@@ -24,11 +28,14 @@ public class WebSocketFacade implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
+        System.out.println("WebSocket opened");
+        sendConnect(webSocket, authToken, gameID);
         webSocket.request(1);
     }
 
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+//        System.out.println("Received from server: " + data);
 
         ServerMessage message = gson.fromJson(data.toString(), ServerMessage.class);
 
