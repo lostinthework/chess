@@ -249,7 +249,7 @@ public class Client {
                         currentGameID = game.getGameID();
                         currentGame = joinedGame.getGame();
                         color = params[1];
-                        server.connectWebSocket(authToken, currentGameID, this);
+                        server.connectWebSocket(authToken, currentGameID, this, observer);
                         return drawBoard(params[1]);
                     }
                 }
@@ -284,7 +284,7 @@ public class Client {
                         currentGame = game.getGame();
                         observer = true;
                         color = "white";
-                        server.connectWebSocket(authToken, currentGameID, this);
+                        server.connectWebSocket(authToken, currentGameID, this, observer);
                         return drawBoard(color);
                     }
                 }

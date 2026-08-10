@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import io.javalin.websocket.WsContext;
 import io.javalin.websocket.WsMessageContext;
 import model.GameData;
@@ -30,7 +31,7 @@ public class WebSocketHandler {
         System.out.println("WebSocket connected");
     }
 
-    public void onMessage(WsMessageContext ctx) {
+    public void onMessage(WsMessageContext ctx) throws DataAccessException {
         System.out.println("WebSocket message received: " + ctx.message());
         Gson gson = new Gson();
         UserGameCommand command = gson.fromJson(ctx.message(), UserGameCommand.class);
@@ -68,6 +69,31 @@ public class WebSocketHandler {
             }
             catch (Exception e) {
                 System.out.println("WebSocket error: " + e.getMessage());
+            }
+        }
+        if (command.getCommandType() == UserGameCommand.CommandType.LEAVE) {
+            Integer gameID = command.getGameID();
+            String username = gameService.getUsername(command.getAuthToken());
+            GameData game = gameService.getGame(gameID);
+            if (username.equals(game.getWhiteUsername())) {
+                game.setWhiteUsername(null);
+            } else {
+                game.setBlackUsername(null);
+            }
+            gameService.updateGame(game);
+            Set<WsContext> gameConnections = connections.get(gameID);
+            if (gameConnections != null) {
+                gameConnections.remove(ctx);
+                if (gameConnections.isEmpty()) {
+                    connections.remove(gameID);
+                }
+            }
+            Notification notification = new Notification(username + " left the game.");
+            String json = new Gson().toJson(notification);
+            if (gameConnections != null) {
+                for (WsContext connection : gameConnections) {
+                    connection.send(json);
+                }
             }
         }
     }

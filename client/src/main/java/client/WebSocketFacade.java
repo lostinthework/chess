@@ -14,11 +14,13 @@ public class WebSocketFacade implements WebSocket.Listener {
     private final String authToken;
     private final int gameID;
     private final Client client;
+    private final boolean observer;
 
-    public WebSocketFacade(String authToken, int gameID, Client client) {
+    public WebSocketFacade(String authToken, int gameID, Client client, boolean observer) {
         this.authToken = authToken;
         this.gameID = gameID;
         this.client = client;
+        this.observer = observer;
     }
 
     public void sendConnect(WebSocket webSocket, String authToken, int gameID) {
@@ -28,6 +30,12 @@ public class WebSocketFacade implements WebSocket.Listener {
 
     public void sendLeave(WebSocket webSocket) {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        webSocket.sendText(gson.toJson(command), true);
+    }
+
+    public void sendObserve(WebSocket webSocket) {
+        UserGameCommand command =
+                new UserGameCommand(UserGameCommand.CommandType.OBSERVE, authToken, gameID);
         webSocket.sendText(gson.toJson(command), true);
     }
 

@@ -77,10 +77,10 @@ public class ServerFacade {
         }
     }
 
-    public void connectWebSocket(String authToken, int gameID, Client client) throws ResponseException {
-
+    public void connectWebSocket(String authToken, int gameID, Client client, boolean observer) throws ResponseException {
         try {
-            webSocket = HTTP_CLIENT.newWebSocketBuilder().buildAsync(URI.create(serverUrl.replace("http", "ws") + "/ws"), new WebSocketFacade(authToken, gameID, client)).join();
+            webSocketFacade = new WebSocketFacade(authToken, gameID, client, observer);
+            webSocket = HTTP_CLIENT.newWebSocketBuilder().buildAsync(URI.create(serverUrl.replace("http", "ws") + "/ws"), webSocketFacade).join();
         }
         catch (Exception e) {
             throw new ResponseException (ResponseException.Code.ServerError, e.getMessage());
