@@ -138,4 +138,10 @@ public class ServerFacade {
             webSocketFacade.sendLeave(webSocket);
         }
     }
+
+    public void resignWebSocket() {
+        if (webSocket != null && webSocketFacade != null) {
+            webSocketFacade.sendResign(webSocket);
+        }
+    }
 }

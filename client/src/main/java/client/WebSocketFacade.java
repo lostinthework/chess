@@ -53,7 +53,7 @@ public class WebSocketFacade implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        System.out.println("WebSocket opened");
+//        System.out.println("WebSocket opened");
         sendConnect(webSocket, authToken, gameID);
         webSocket.request(1);
     }

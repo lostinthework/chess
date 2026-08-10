@@ -435,6 +435,8 @@ public class Client {
         if (currentGameID == null || observer) {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before resigning.");
         }
+        server.resignWebSocket();
+        leave();
         return "";
     }
 
