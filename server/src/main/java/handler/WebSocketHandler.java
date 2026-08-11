@@ -12,6 +12,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
+import io.javalin.websocket.WsErrorContext;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -124,22 +125,40 @@ public class WebSocketHandler {
                     ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
                     return;
                 }
+                System.out.println("Got game: " + game);
+                System.out.println("Game turn: " + game.getGame().getTeamTurn());
+                System.out.println("Player color: " + playerColor);
                 if (game.getGame().getTeamTurn() != playerColor) {
-                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    System.out.println("NOT THEIR TURN");
+                    Notification notification = new Notification("It is not your turn.");
+
+                    ctx.send(gson.toJson(notification));
                     return;
                 }
+                System.out.println("TURN IS CORRECT");
                 try {
+                    System.out.println("BEFORE makeMove");
                     game.getGame().makeMove(command.getMove());
+                    System.out.println("AFTER makeMove");
                 }
                 catch (InvalidMoveException e) {
-                    ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                    System.out.println("Invalid move: " + e.getMessage());
+                    Notification notification = new Notification("Invalid move.");
+                    ctx.send(gson.toJson(notification));
                     return;
                 }
+                System.out.println("BEFORE updateGame");
                 gameService.updateGame(game);
+                System.out.println("AFTER updateGame");
                 ChessGame.TeamColor nextTurn = game.getGame().getTeamTurn();
                 if (game.getGame().isInCheckmate(nextTurn)) {
-                    String winner = playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black";
-                    Notification notification = new Notification(winner + " wins.");
+                    String winUsername;
+                    if (nextTurn == ChessGame.TeamColor.WHITE) {
+                        winUsername = game.getWhiteUsername();
+                    } else {
+                        winUsername = game.getBlackUsername();
+                    }
+                    Notification notification = new Notification(winUsername + " wins.");
                     Set<WsContext> gameConnections = connections.get(command.getGameID());
                     if (gameConnections != null) {
                         String notificationJson = gson.toJson(notification);
@@ -197,6 +216,7 @@ public class WebSocketHandler {
             }
             catch (Exception e) {
                 System.out.println("WebSocket move error: " + e.getMessage());
+                e.printStackTrace();
             }
         }
         if (command.getCommandType() == UserGameCommand.CommandType.RESIGN) {
@@ -259,8 +279,9 @@ public class WebSocketHandler {
         }
     }
 
-    public void onError(WsContext ctx) {
-        System.out.println(ctx);
+    public void onError(WsErrorContext ctx) {
+        System.out.println("Error: " + ctx.error());
+        ctx.error().printStackTrace();
         System.out.println("WebSocket error");
     }
 }

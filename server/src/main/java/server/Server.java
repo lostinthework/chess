@@ -29,7 +29,9 @@ public class Server {
         GameService gamesService = new GameService(userDAO, authDAO, gameDAO);
         WebSocketHandler webSocketHandler = new WebSocketHandler(gamesService);
 
-        app = Javalin.create(config -> {config.staticFiles.add("web");}).start(desiredPort);
+        app = Javalin.create(config -> {config.staticFiles.add("web");
+            config.jetty.modifyWebSocketServletFactory(factory ->
+                    factory.setIdleTimeout(java.time.Duration.ofHours(3)));}).start(desiredPort);
 
         // Register your endpoints and handle exceptions here.
 

@@ -75,11 +75,11 @@ public class WebSocketFacade implements WebSocket.Listener {
         ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
 
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            Notification notification = gson.fromJson(data.toString(), Notification.class);
+            Notification notification = gson.fromJson(message, Notification.class);
             client.notify(notification);
         }
         else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-            LoadGame loadGame = gson.fromJson(data.toString(), LoadGame.class);
+            LoadGame loadGame = gson.fromJson(message, LoadGame.class);
             client.updateGame(loadGame.getGame());
         }
         else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
