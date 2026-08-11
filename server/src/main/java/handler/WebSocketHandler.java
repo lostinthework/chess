@@ -136,6 +136,56 @@ public class WebSocketHandler {
                     return;
                 }
                 gameService.updateGame(game);
+                ChessGame.TeamColor nextTurn = game.getGame().getTeamTurn();
+                if (game.getGame().isInCheckmate(nextTurn)) {
+                    String winner = playerColor == ChessGame.TeamColor.WHITE ? "White" : "Black";
+                    Notification notification = new Notification(winner + " wins.");
+                    Set<WsContext> gameConnections = connections.get(command.getGameID());
+                    if (gameConnections != null) {
+                        String notificationJson = gson.toJson(notification);
+                        for (WsContext connection : gameConnections) {
+                            connection.send(notificationJson);
+                        }
+                        connections.remove(command.getGameID());
+                        for (WsContext connection : gameConnections) {
+                            connectionGames.remove(connection);
+                        }
+                    }
+                    gameService.deleteGame(command.getGameID());
+                    return;
+                }
+                if (game.getGame().isInStalemate(nextTurn)) {
+                    Notification notification = new Notification("Stalemate!");
+                    Set<WsContext> gameConnections = connections.get(command.getGameID());
+                    if (gameConnections != null) {
+                        String notificationJson = gson.toJson(notification);
+                        for (WsContext connection : gameConnections) {
+                            connection.send(notificationJson);
+                        }
+                        connections.remove(command.getGameID());
+                        for (WsContext connection : gameConnections) {
+                            connectionGames.remove(connection);
+                        }
+                    }
+                    gameService.deleteGame(command.getGameID());
+                    return;
+                }
+                if (game.getGame().isInCheck(nextTurn)) {
+                    String checkedUsername;
+                    if (nextTurn == ChessGame.TeamColor.WHITE) {
+                        checkedUsername = game.getWhiteUsername();
+                    } else {
+                        checkedUsername = game.getBlackUsername();
+                    }
+                    Notification notification = new Notification(checkedUsername + " is in check.");
+                    Set<WsContext> gameConnections = connections.get(command.getGameID());
+                    if (gameConnections != null) {
+                        String notificationJson = gson.toJson(notification);
+                        for (WsContext connection : gameConnections) {
+                            connection.send(notificationJson);
+                        }
+                    }
+                }
                 LoadGame loadGame = new LoadGame(game);
                 String json = gson.toJson(loadGame);
                 Set<WsContext> gameConnections = connections.get(command.getGameID());
@@ -210,6 +260,7 @@ public class WebSocketHandler {
     }
 
     public void onError(WsContext ctx) {
+        System.out.println(ctx);
         System.out.println("WebSocket error");
     }
 }

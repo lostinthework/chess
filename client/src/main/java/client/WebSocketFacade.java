@@ -17,6 +17,7 @@ public class WebSocketFacade implements WebSocket.Listener {
     private final int gameID;
     private final Client client;
     private final boolean observer;
+    private final StringBuilder messageBuffer = new StringBuilder();
 
     public WebSocketFacade(String authToken, int gameID, Client client, boolean observer) {
         this.authToken = authToken;
@@ -61,18 +62,27 @@ public class WebSocketFacade implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
 //        System.out.println("Received from server: " + data);
+        messageBuffer.append(data);
 
-        ServerMessage message = gson.fromJson(data.toString(), ServerMessage.class);
+        if (!last) {
+            webSocket.request(1);
+            return null;
+        }
 
-        if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+        String message = messageBuffer.toString();
+        messageBuffer.setLength(0);
+
+        ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+
+        if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             Notification notification = gson.fromJson(data.toString(), Notification.class);
             client.notify(notification);
         }
-        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+        else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
             LoadGame loadGame = gson.fromJson(data.toString(), LoadGame.class);
             client.updateGame(loadGame.getGame());
         }
-        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+        else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             System.out.println("WebSocket error from server.");
         }
 
