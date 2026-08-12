@@ -13,6 +13,7 @@ import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import io.javalin.websocket.WsErrorContext;
+import chess.ChessMove;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -150,6 +151,16 @@ public class WebSocketHandler {
                 System.out.println("BEFORE updateGame");
                 gameService.updateGame(game);
                 System.out.println("AFTER updateGame");
+                Set<WsContext> gameConnections = connections.get(command.getGameID());
+                if (gameConnections != null) {
+                    ChessMove move = command.getMove();
+                    Notification moveNotification = new Notification(
+                            username + " moved " + move.getStartPosition() + " to " + move.getEndPosition());
+                    String notificationJson = gson.toJson(moveNotification);
+                    for (WsContext connection : gameConnections) {
+                        connection.send(notificationJson);
+                    }
+                }
                 ChessGame.TeamColor nextTurn = game.getGame().getTeamTurn();
                 if (game.getGame().isInCheckmate(nextTurn)) {
                     String winUsername;
@@ -159,7 +170,6 @@ public class WebSocketHandler {
                         winUsername = game.getBlackUsername();
                     }
                     Notification notification = new Notification(winUsername + " wins.");
-                    Set<WsContext> gameConnections = connections.get(command.getGameID());
                     if (gameConnections != null) {
                         String notificationJson = gson.toJson(notification);
                         for (WsContext connection : gameConnections) {
@@ -175,7 +185,6 @@ public class WebSocketHandler {
                 }
                 if (game.getGame().isInStalemate(nextTurn)) {
                     Notification notification = new Notification("Stalemate!");
-                    Set<WsContext> gameConnections = connections.get(command.getGameID());
                     if (gameConnections != null) {
                         String notificationJson = gson.toJson(notification);
                         for (WsContext connection : gameConnections) {
@@ -197,7 +206,6 @@ public class WebSocketHandler {
                         checkedUsername = game.getBlackUsername();
                     }
                     Notification notification = new Notification(checkedUsername + " is in check.");
-                    Set<WsContext> gameConnections = connections.get(command.getGameID());
                     if (gameConnections != null) {
                         String notificationJson = gson.toJson(notification);
                         for (WsContext connection : gameConnections) {
@@ -207,7 +215,6 @@ public class WebSocketHandler {
                 }
                 LoadGame loadGame = new LoadGame(game);
                 String json = gson.toJson(loadGame);
-                Set<WsContext> gameConnections = connections.get(command.getGameID());
                 if (gameConnections != null) {
                     for (WsContext connection : gameConnections) {
                         connection.send(json);
