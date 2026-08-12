@@ -266,7 +266,7 @@ public class Client {
                         color = params[1];
                         server.connectWebSocket(authToken, currentGameID, this, observer);
                         promptDisplayed = false;
-                        updateGame(joinedGame);
+
                         return "";
                     }
                 }
@@ -301,7 +301,7 @@ public class Client {
                         observer = true;
                         color = "white";
                         server.connectWebSocket(authToken, currentGameID, this, observer);
-                        return drawBoard(color, false);
+                        return "";
                     }
                 }
             }

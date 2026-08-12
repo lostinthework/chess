@@ -75,7 +75,7 @@ public class WebSocketFacade implements WebSocket.Listener {
             client.updateGame(loadGame.getGame());
         }
         else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            System.out.println("WebSocket error from server.");
+            System.out.println(serverMessage.getErrorMessage());
         }
 
         webSocket.request(1);
