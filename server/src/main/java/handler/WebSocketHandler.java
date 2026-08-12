@@ -74,9 +74,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ctx.error().printStackTrace();
     }
 
-//    public void onConnect(WsContext ctx) {
-//        System.out.println("WebSocket connected");
-//    }
 
     private void connect(WsMessageContext ctx, UserGameCommand command) {
         try {
