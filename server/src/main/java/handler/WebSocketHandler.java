@@ -152,28 +152,12 @@ public class WebSocketHandler {
                     winUsername = game.getBlackUsername();
                 }
                 Notification notification = new Notification(winUsername + " wins.");
-                if (gameConnections != null) {
-                    String notificationJson = gson.toJson(notification);
-                    notify(gameConnections, notificationJson);
-                    connections.remove(command.getGameID());
-                    for (WsContext connection : gameConnections) {
-                        connectionGames.remove(connection);
-                    }
-                }
-                gameService.deleteGame(command.getGameID());
+                notifyHelper(gameConnections, gson, notification, command);
                 return;
             }
             if (game.getGame().isInStalemate(nextTurn)) {
                 Notification notification = new Notification("Stalemate!");
-                if (gameConnections != null) {
-                    String notificationJson = gson.toJson(notification);
-                    notify(gameConnections, notificationJson);
-                    connections.remove(command.getGameID());
-                    for (WsContext connection : gameConnections) {
-                        connectionGames.remove(connection);
-                    }
-                }
-                gameService.deleteGame(command.getGameID());
+                notifyHelper(gameConnections, gson, notification, command);
                 return;
             }
             if (game.getGame().isInCheck(nextTurn)) {
@@ -205,6 +189,19 @@ public class WebSocketHandler {
         for (WsContext connection : gameConnections) {
             connection.send(json);
         }
+    }
+
+    private void notifyHelper(Set<WsContext> gameConnections, Gson gson, Notification notification,
+                              UserGameCommand command) throws DataAccessException {
+        if (gameConnections != null) {
+            String notificationJson = gson.toJson(notification);
+            notify(gameConnections, notificationJson);
+            connections.remove(command.getGameID());
+            for (WsContext connection : gameConnections) {
+                connectionGames.remove(connection);
+            }
+        }
+        gameService.deleteGame(command.getGameID());
     }
 
     private void resign(WsMessageContext ctx, UserGameCommand command, Gson gson) {
