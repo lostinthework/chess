@@ -83,7 +83,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             GameData game = gameService.getGame(command.getGameID());
             if (game == null) {
-                ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Game not found.");
+                ctx.send(new Gson().toJson(error));
                 return;
             }
             connections.computeIfAbsent(command.getGameID(), id -> new HashSet<>()).add(ctx);
@@ -147,12 +149,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void makeMove(WsMessageContext ctx, UserGameCommand command, Gson gson) {
         try {
             if (gameService.getAuth(command.getAuthToken()) == null) {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Invalid authentication token.");
+                ctx.send(new Gson().toJson(error));
                 return;
             }
             GameData game = gameService.getGame(command.getGameID());
             if (game == null || command.getMove() == null) {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Invalid game or move.");
+                ctx.send(gson.toJson(error));
                 return;
             }
             String username = gameService.getUsername(command.getAuthToken());
@@ -164,7 +170,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             else {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Observers cannot make moves.");
+                ctx.send(gson.toJson(error));
                 return;
             }
             if (game.getGame().getTeamTurn() != playerColor) {
@@ -269,20 +277,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resign(WsMessageContext ctx, UserGameCommand command, Gson gson) {
         try {
             if (gameService.getAuth(command.getAuthToken()) == null) {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Invalid authentication token.");
+                ctx.send(gson.toJson(error));
                 return;
             }
             int gameID = command.getGameID();
             GameData game = gameService.getGame(gameID);
             if (game == null) {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Game is already over.");
+                ctx.send(gson.toJson(error));
                 return;
             }
             String username = gameService.getUsername(command.getAuthToken());
             boolean isWhite = username.equals(game.getWhiteUsername());
             boolean isBlack = username.equals(game.getBlackUsername());
             if (!isWhite && !isBlack) {
-                ctx.send(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Observers cannot resign.");
+                ctx.send(gson.toJson(error));
                 return;
             }
             String winner;
