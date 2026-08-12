@@ -1,9 +1,6 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -413,7 +410,9 @@ public class Client {
         ChessPosition start = notationToPosition(startPosition.charAt(0), startPosition.charAt(1) - '0');
         ChessPosition end = notationToPosition(endPosition.charAt(0), endPosition.charAt(1) - '0');
         ChessPiece.PieceType promotionPiece = null;
-        if ((color.equals("white") && end.getRow() == 8) || (color.equals("black") && end.getRow() == 1)) {
+        if (currentGame.getBoard().getPiece(start) != null &&
+            currentGame.getBoard().getPiece(start).getPieceType() == ChessPiece.PieceType.PAWN &&
+            ((color.equals("white") && end.getRow() == 8) || (color.equals("black") && end.getRow() == 1))) {
             System.out.print("Promote to which piece (queen, rook, bishop, knight): ");
             String input = scanner.nextLine().trim().toLowerCase();
             promotionPiece = switch (input) {
@@ -449,8 +448,21 @@ public class Client {
         if (currentGameID == null || observer) {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before resigning.");
         }
-        server.resignWebSocket();
-        return "";
+        while (true) {
+            System.out.print("Are you sure that you want to resign?" + "\n>>> ");
+            String input = scanner.nextLine();
+            String[] tokens = input.toLowerCase().split("\\s+");
+            if (tokens.length != 1) {
+                System.out.print("Expected <yes|no>");
+            } else if (tokens[0].equals("yes")) {
+                server.resignWebSocket();
+                return "";
+            } else if (tokens[0].equals("no")) {
+                return "";
+            } else {
+                System.out.print("Expected <yes|no>");
+            }
+        }
     }
 
     public String highlight(String... params) throws ResponseException {
