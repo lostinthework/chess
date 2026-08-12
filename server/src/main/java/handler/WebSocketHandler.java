@@ -78,7 +78,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void connect(WsMessageContext ctx, UserGameCommand command) {
         try {
             if (gameService.getAuth(command.getAuthToken()) == null) {
-                ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR)));
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Error: Invalid authentication token.");
+                ctx.send(new Gson().toJson(error));
                 return;
             }
             GameData game = gameService.getGame(command.getGameID());
