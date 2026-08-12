@@ -61,10 +61,10 @@ public class Server {
         app.delete("/game/leave", ctx -> new handler.Leave(gamesService).handle(ctx));
 
         app.ws("/ws", ws -> {
-            ws.onConnect(webSocketHandler::onConnect);
-            ws.onMessage(webSocketHandler::onMessage);
-            ws.onClose(webSocketHandler::onClose);
-            ws.onError(webSocketHandler::onError);
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+            ws.onError(webSocketHandler);
         });
 
         app.exception(ResponseException.class, (e, ctx) -> {

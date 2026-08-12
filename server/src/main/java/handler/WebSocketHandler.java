@@ -4,15 +4,13 @@ import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import io.javalin.websocket.WsContext;
-import io.javalin.websocket.WsMessageContext;
+import io.javalin.websocket.*;
 import model.GameData;
 import service.GameService;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
-import io.javalin.websocket.WsErrorContext;
 import chess.ChessMove;
 
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class WebSocketHandler {
+public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler, WsErrorHandler {
 
     private final GameService gameService;
     private final Map<Integer, Set<WsContext>> connections;
@@ -32,9 +30,53 @@ public class WebSocketHandler {
         this.connectionGames = new HashMap<>();
     }
 
-    public void onConnect(WsContext ctx) {
+    @Override
+    public void handleConnect(WsConnectContext ctx) {
         System.out.println("WebSocket connected");
+        ctx.enableAutomaticPings();
     }
+
+    @Override
+    public void handleMessage(WsMessageContext ctx) {
+        Gson gson = new Gson();
+        UserGameCommand command = gson.fromJson(ctx.message(), UserGameCommand.class);
+        try {
+            switch (command.getCommandType()) {
+                case CONNECT -> connect(ctx, command);
+                case LEAVE -> leave(ctx, command);
+                case MAKE_MOVE -> makeMove(ctx, command, gson);
+                case RESIGN -> resign(ctx, command, gson);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("WebSocket error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void handleClose(WsCloseContext ctx) {
+        System.out.println("WebSocket closed");
+        Integer gameID = connectionGames.remove(ctx);
+        if (gameID != null) {
+            Set<WsContext> gameConnections = connections.get(gameID);
+            if (gameConnections != null) {
+                gameConnections.remove(ctx);
+                if (gameConnections.isEmpty()) {
+                    connections.remove(gameID);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handleError(WsErrorContext ctx) {
+        System.out.println("Error: " + ctx.error());
+        ctx.error().printStackTrace();
+    }
+
+//    public void onConnect(WsContext ctx) {
+//        System.out.println("WebSocket connected");
+//    }
 
     private void connect(WsMessageContext ctx, UserGameCommand command) {
         try {
@@ -51,6 +93,9 @@ public class WebSocketHandler {
             connectionGames.put(ctx, command.getGameID());
             String username = gameService.getUsername(command.getAuthToken());
 
+            LoadGame loadGame = new LoadGame(game);
+            ctx.send(new Gson().toJson(loadGame));
+
             String color;
             if (username.equals(game.getWhiteUsername())) {
                 color = "white";
@@ -62,7 +107,9 @@ public class WebSocketHandler {
             Notification notification = new Notification(username + " joined the game as " + color + ".");
             String json = new Gson().toJson(notification);
             for (WsContext connection : connections.get(command.getGameID())) {
-                connection.send(json);
+                if (connection != ctx) {
+                    connection.send(json);
+                }
             }
         }
         catch (Exception e) {
@@ -249,44 +296,44 @@ public class WebSocketHandler {
         }
     }
 
-    public void onMessage(WsMessageContext ctx) throws DataAccessException {
-        System.out.println("WebSocket message received: " + ctx.message());
-        Gson gson = new Gson();
-        UserGameCommand command = gson.fromJson(ctx.message(), UserGameCommand.class);
-        System.out.println("Command: " + command.getCommandType());
-        System.out.println("Game ID: " + command.getGameID());
-        System.out.println("Auth token: " + command.getAuthToken());
-        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
-            connect(ctx, command);
-        }
-        if (command.getCommandType() == UserGameCommand.CommandType.LEAVE) {
-            leave(ctx, command);
-        }
-        if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE) {
-            makeMove(ctx, command, gson);
-        }
-        if (command.getCommandType() == UserGameCommand.CommandType.RESIGN) {
-            resign(ctx, command, gson);
-        }
-    }
+//    public void onMessage(WsMessageContext ctx) throws DataAccessException {
+//        System.out.println("WebSocket message received: " + ctx.message());
+//        Gson gson = new Gson();
+//        UserGameCommand command = gson.fromJson(ctx.message(), UserGameCommand.class);
+//        System.out.println("Command: " + command.getCommandType());
+//        System.out.println("Game ID: " + command.getGameID());
+//        System.out.println("Auth token: " + command.getAuthToken());
+//        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
+//            connect(ctx, command);
+//        }
+//        if (command.getCommandType() == UserGameCommand.CommandType.LEAVE) {
+//            leave(ctx, command);
+//        }
+//        if (command.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE) {
+//            makeMove(ctx, command, gson);
+//        }
+//        if (command.getCommandType() == UserGameCommand.CommandType.RESIGN) {
+//            resign(ctx, command, gson);
+//        }
+//    }
 
-    public void onClose(WsContext ctx) {
-        System.out.println("WebSocket closed");
-        Integer gameID = connectionGames.remove(ctx);
-        if (gameID != null) {
-            Set<WsContext> gameConnections = connections.get(gameID);
-            if (gameConnections != null) {
-                gameConnections.remove(ctx);
-                if (gameConnections.isEmpty()) {
-                    connections.remove(gameID);
-                }
-            }
-        }
-    }
+//    public void onClose(WsContext ctx) {
+//        System.out.println("WebSocket closed");
+//        Integer gameID = connectionGames.remove(ctx);
+//        if (gameID != null) {
+//            Set<WsContext> gameConnections = connections.get(gameID);
+//            if (gameConnections != null) {
+//                gameConnections.remove(ctx);
+//                if (gameConnections.isEmpty()) {
+//                    connections.remove(gameID);
+//                }
+//            }
+//        }
+//    }
 
-    public void onError(WsErrorContext ctx) {
-        System.out.println("Error: " + ctx.error());
-        ctx.error().printStackTrace();
-        System.out.println("WebSocket error");
-    }
+//    public void onError(WsErrorContext ctx) {
+//        System.out.println("Error: " + ctx.error());
+//        ctx.error().printStackTrace();
+//        System.out.println("WebSocket error");
+//    }
 }
