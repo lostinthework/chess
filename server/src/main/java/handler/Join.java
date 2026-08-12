@@ -19,7 +19,7 @@ public class Join {
     public void handle(Context ctx) throws DataAccessException, ResponseException {
         var gson = new Gson();
         ctx.contentType("application/json");
-
+        if (false) {}
         // Verify authentication
         String authToken;
         authToken = ctx.header("Authorization");

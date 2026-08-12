@@ -36,12 +36,6 @@ public class WebSocketFacade implements WebSocket.Listener {
         webSocket.sendText(gson.toJson(command), true);
     }
 
-    public void sendObserve(WebSocket webSocket) {
-        UserGameCommand command =
-                new UserGameCommand(UserGameCommand.CommandType.OBSERVE, authToken, gameID, null);
-        webSocket.sendText(gson.toJson(command), true);
-    }
-
     public void sendMove(WebSocket webSocket, ChessMove move) {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
         webSocket.sendText(gson.toJson(command), true);
@@ -54,14 +48,12 @@ public class WebSocketFacade implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
-//        System.out.println("WebSocket opened");
         sendConnect(webSocket, authToken, gameID);
         webSocket.request(1);
     }
 
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-//        System.out.println("Received from server: " + data);
         messageBuffer.append(data);
 
         if (!last) {
