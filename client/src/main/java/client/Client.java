@@ -19,6 +19,7 @@ public class Client {
     private static final String FB = "\u001b[30;1m";
     private static final String BW = "\u001b[47;1m";
     private static final String BB = "\u001b[100;1m";
+    private static final String BL = "\u001b[44;1m";
     private static final String R = "\u001b[0m";
 
     private final Scanner scanner = new Scanner(System.in);
@@ -26,6 +27,8 @@ public class Client {
     private String color = null;
     private Integer currentGameID = null;
     private ChessGame currentGame = null;
+    private boolean promptDisplayed = false;
+    private ChessPosition highlightPosition = null;
 
     public Client(ServerFacade server) {
         this.server = server;
@@ -189,9 +192,35 @@ public class Client {
         return character + R;
     }
 
-    private String drawBoard(String color) {
+    private boolean validMove(ChessPosition endPosition) {
+        if (highlightPosition == null || currentGame == null) {return false;}
+        if (currentGame.getBoard().getPiece(highlightPosition) == null) {return false;}
+        for (ChessMove move : currentGame.validMoves(highlightPosition)) {
+            if (move.getEndPosition().equals(endPosition)) {return true;}
+        }
+        return false;
+    }
+
+    private String drawBoard(String color, boolean highlight) {
         if (color.equals("white")) {
-            return
+            if (highlight) {
+                String BG = null;
+                String board = FW + BW + "    a  b  c  d  e  f  g  h    " + R + "\n";
+                for (int i = 1; i <= 8; i++) {
+                    board += FW + BW + " " + (9 - i) + " " + R;
+                    for (int j = 1; j <= 8; j++) {
+                        if (validMove(new ChessPosition(9 - i, j))) {BG = BL;}
+                        else if ((i + j) % 2 == 0) {BG = BB;}
+                        else {BG = BW;}
+                        board += (BG + piece(9 - i, j));
+                    }
+                    board += FW + BW + " " + (9 - i) + " " + R + "\n";
+                }
+                board += FW + BW + "    a  b  c  d  e  f  g  h    " + R + "\n";
+                return board;
+            }
+            else {
+                return
                 FW + BW + "    a  b  c  d  e  f  g  h    " + R + "\n" +
                 FW + BW + " 8 " + R + BW + piece(8, 1) + BB + piece(8, 2) + BW + piece(8, 3) + BB + piece(8, 4) + BW + piece(8, 5) + BB + piece(8, 6) + BW + piece(8, 7) + BB + piece(8, 8) + FW + BW + " 8 " + R + "\n" +
                 FW + BW + " 7 " + R + BB + piece(7, 1) + BW + piece(7, 2) + BB + piece(7, 3) + BW + piece(7, 4) + BB + piece(7, 5) + BW + piece(7, 6) + BB + piece(7, 7) + BW + piece(7, 8) + FW + BW + " 7 " + R + "\n" +
@@ -202,9 +231,27 @@ public class Client {
                 FW + BW + " 2 " + R + BW + piece(2, 1) + BB + piece(2, 2) + BW + piece(2, 3) + BB + piece(2, 4) + BW + piece(2, 5) + BB + piece(2, 6) + BW + piece(2, 7) + BB + piece(2, 8) + FW + BW + " 2 " + R + "\n" +
                 FW + BW + " 1 " + R + BB + piece(1, 1) + BW + piece(1, 2) + BB + piece(1, 3) + BW + piece(1, 4) + BB + piece(1, 5) + BW + piece(1, 6) + BB + piece(1, 7) + BW + piece(1, 8) + FW + BW + " 1 " + R + "\n" +
                 FW + BW + "    a  b  c  d  e  f  g  h    " + R + "\n";
+            }
         }
         else {
-            return
+            if (highlight) {
+                String BG = null;
+                String board = FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n";
+                for (int i = 1; i <= 8; i++) {
+                    board += FB + BB + " " + i + " " + R;
+                    for (int j = 1; j <= 8; j++) {
+                        if (validMove(new ChessPosition(i, 9 - j))) {BG = BL;}
+                        else if ((i + j) % 2 == 0) {BG = BB;}
+                        else {BG = BW;}
+                        board += (BG + piece(i, 9 - j));
+                    }
+                    board += FB + BB + " " + i + " " + R + "\n";
+                }
+                board += FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n";
+                return board;
+            }
+            else {
+                return
                 FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n" +
                 FB + BB + " 1 " + R + BW + piece(1, 8) + BB + piece(1, 7) + BW + piece(1, 6) + BB + piece(1, 5) + BW + piece(1, 4) + BB + piece(1, 3) + BW + piece(1, 2) + BB + piece(1, 1) + FB + BB + " 1 " + R + "\n" +
                 FB + BB + " 2 " + R + BB + piece(2, 8) + BW + piece(2, 7) + BB + piece(2, 6) + BW + piece(2, 5) + BB + piece(2, 4) + BW + piece(2, 3) + BB + piece(2, 2) + BW + piece(2, 1) + FB + BB + " 2 " + R + "\n" +
@@ -215,6 +262,7 @@ public class Client {
                 FB + BB + " 7 " + R + BW + piece(7, 8) + BB + piece(7, 7) + BW + piece(7, 6) + BB + piece(7, 5) + BW + piece(7, 4) + BB + piece(7, 3) + BW + piece(7, 2) + BB + piece(7, 1) + FB + BB + " 7 " + R + "\n" +
                 FB + BB + " 8 " + R + BB + piece(8, 8) + BW + piece(8, 7) + BB + piece(8, 6) + BW + piece(8, 5) + BB + piece(8, 4) + BW + piece(8, 3) + BB + piece(8, 2) + BW + piece(8, 1) + FB + BB + " 8 " + R + "\n" +
                 FB + BB + "    h  g  f  e  d  c  b  a    " + R + "\n";
+            }
         }
     }
 
@@ -250,7 +298,9 @@ public class Client {
                         currentGame = joinedGame.getGame();
                         color = params[1];
                         server.connectWebSocket(authToken, currentGameID, this, observer);
-                        return drawBoard(params[1]);
+                        promptDisplayed = false;
+                        updateGame(joinedGame);
+                        return "";
                     }
                 }
                 throw new ResponseException(ResponseException.Code.BadRequest, "Invalid game number.");
@@ -285,7 +335,7 @@ public class Client {
                         observer = true;
                         color = "white";
                         server.connectWebSocket(authToken, currentGameID, this, observer);
-                        return drawBoard(color);
+                        return drawBoard(color, false);
                     }
                 }
             }
@@ -331,7 +381,10 @@ public class Client {
     }
 
     public void notify(Notification notification) {
+        System.out.print("\r\033[K");
         System.out.println(notification.getMessage());
+        System.out.print(">>> ");
+        promptDisplayed = true;
     }
 
     public String redraw() throws ResponseException {
@@ -341,7 +394,7 @@ public class Client {
         if (currentGameID == null) {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join a game before redrawing the board.");
         }
-        return drawBoard(color);
+        return drawBoard(color, false);
     }
 
     public String leave() throws ResponseException {
@@ -353,19 +406,20 @@ public class Client {
         }
 
         server.leaveWebSocket();
-//        server.leave(authToken, currentGameID);
         currentGameID = null;
         currentGame = null;
         color = null;
         observer = false;
-
         return "You left the game.\n";
     }
 
     public void updateGame(GameData game) {
         ChessGame board = game.getGame();
         currentGame = board;
-        System.out.print("\n" + drawBoard(color));
+        System.out.print("\r\033[K");
+        System.out.print(drawBoard(color, false));
+        System.out.print(">>> ");
+        promptDisplayed = true;
     }
 
     private ChessPosition notationToPosition (char file, int rank) throws ResponseException {
@@ -447,7 +501,8 @@ public class Client {
             throw new ResponseException(ResponseException.Code.BadRequest, "You must join or observe a game before highlighting.");
         }
         if (params.length == 1) {
-            return "";
+            highlightPosition = notationToPosition(params[0].charAt(0), params[0].charAt(1) - '0');
+            return drawBoard(color, true);
         }
         throw new ResponseException(ResponseException.Code.BadRequest, "Expected: <piece>");
     }
